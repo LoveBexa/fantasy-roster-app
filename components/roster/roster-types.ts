@@ -18,6 +18,7 @@ export interface Player {
   addedDate: string
   lastUpdated: string
   notes?: string
+  photoUrl?: string
 }
 
 export const PLAYER_STATUSES: PlayerStatus[] = [

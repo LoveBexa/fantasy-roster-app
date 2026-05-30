@@ -5,6 +5,7 @@ import {
   Trophy,
   Heart,
   Settings,
+  ClipboardList,
   LogOut,
   type LucideIcon,
 } from "lucide-react"
@@ -19,6 +20,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { label: "League Table", icon: Trophy, href: "/dashboard" },
+  { label: "Daily Stats", icon: ClipboardList, href: "/stats" },
   { label: "My Roster", icon: Heart, href: "/roster" },
   { label: "Account", icon: Settings, href: "/account" },
 ]
@@ -40,10 +42,10 @@ export function AppSidebar({ activePage }: AppSidebarProps) {
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-card/60 px-4 py-6">
       <div className="px-2">
-        <h2 className="font-serif text-xl font-bold leading-tight tracking-tight text-primary">
+        <h2 className="font-serif text-3xl font-bold leading-tight tracking-tight text-primary">
           THE ROSTER
         </h2>
-        <p className="mt-1 text-xs font-semibold tracking-[0.3em] text-muted-foreground">
+        <p className="mt-1 text-[0.65rem] font-semibold tracking-[0.5em] text-primary/50">
           FANTASY LEAGUE
         </p>
       </div>

@@ -14,11 +14,12 @@ import {
 } from "./roster-types"
 
 interface AddPlayerFormProps {
-  onAdd: (player: Omit<Player, "id" | "addedDate" | "lastUpdated">) => void
+  onAdd: (player: Omit<Player, "id" | "addedDate" | "lastUpdated">) => void | Promise<void>
   onCancel: () => void
+  isSubmitting?: boolean
 }
 
-export function AddPlayerForm({ onAdd, onCancel }: AddPlayerFormProps) {
+export function AddPlayerForm({ onAdd, onCancel, isSubmitting = false }: AddPlayerFormProps) {
   const [nickname, setNickname] = useState("")
   const [description, setDescription] = useState("")
   const [emoji, setEmoji] = useState("😎")
@@ -26,9 +27,9 @@ export function AddPlayerForm({ onAdd, onCancel }: AddPlayerFormProps) {
   const [relationshipStatus, setRelationshipStatus] = useState<RelationshipStatus>("Potential Partner")
   const [notes, setNotes] = useState("")
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!nickname.trim()) return
-    onAdd({
+    await onAdd({
       nickname: nickname.trim(),
       description: description.trim() || "New player",
       emoji,
@@ -179,15 +180,15 @@ export function AddPlayerForm({ onAdd, onCancel }: AddPlayerFormProps) {
       {/* Actions */}
       <div className="mt-6 flex items-center justify-end gap-3">
         <StarDoodle className="size-5 text-primary" />
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           CANCEL
         </Button>
         <Button
-          onClick={handleSubmit}
-          disabled={!nickname.trim()}
+          onClick={() => void handleSubmit()}
+          disabled={!nickname.trim() || isSubmitting}
           className="bg-brand-green text-white hover:bg-brand-green/90"
         >
-          ADD PLAYER
+          {isSubmitting ? "ADDING..." : "ADD PLAYER"}
         </Button>
       </div>
     </div>

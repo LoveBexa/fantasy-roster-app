@@ -20,11 +20,17 @@ import {
 
 interface EditPlayerDialogProps {
   player: Player
-  onSave: (player: Player) => void
+  onSave: (player: Player) => void | Promise<void>
   onCancel: () => void
+  isSubmitting?: boolean
 }
 
-export function EditPlayerDialog({ player, onSave, onCancel }: EditPlayerDialogProps) {
+export function EditPlayerDialog({
+  player,
+  onSave,
+  onCancel,
+  isSubmitting = false,
+}: EditPlayerDialogProps) {
   const [nickname, setNickname] = useState(player.nickname)
   const [description, setDescription] = useState(player.description)
   const [emoji, setEmoji] = useState(player.emoji)
@@ -34,9 +40,9 @@ export function EditPlayerDialog({ player, onSave, onCancel }: EditPlayerDialogP
   )
   const [notes, setNotes] = useState(player.notes || "")
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!nickname.trim()) return
-    onSave({
+    await onSave({
       ...player,
       nickname: nickname.trim(),
       description: description.trim(),
@@ -160,15 +166,15 @@ export function EditPlayerDialog({ player, onSave, onCancel }: EditPlayerDialogP
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
-            onClick={handleSave}
-            disabled={!nickname.trim()}
+            onClick={() => void handleSave()}
+            disabled={!nickname.trim() || isSubmitting}
             className="bg-primary text-primary-foreground"
           >
-            Save Changes
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </DialogContent>

@@ -13,14 +13,16 @@ import type { Player } from "./roster-types"
 
 interface DeletePlayerDialogProps {
   player: Player
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void | Promise<void>
   onCancel: () => void
+  isSubmitting?: boolean
 }
 
 export function DeletePlayerDialog({
   player,
   onDelete,
   onCancel,
+  isSubmitting = false,
 }: DeletePlayerDialogProps) {
   return (
     <AlertDialog open onOpenChange={(open) => !open && onCancel()}>
@@ -38,14 +40,15 @@ export function DeletePlayerDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
             variant="destructive"
-            onClick={() => onDelete(player.id)}
+            disabled={isSubmitting}
+            onClick={() => void onDelete(player.id)}
           >
-            Delete Player
+            {isSubmitting ? "Deleting..." : "Delete Player"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

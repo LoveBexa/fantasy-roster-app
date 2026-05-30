@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowUp, ArrowDown } from "lucide-react"
+import Link from "next/link"
+import { ArrowUp, ArrowDown, ClipboardList } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { StarDoodle, CrownDoodle } from "@/components/doodles"
 
 type Player = {
@@ -122,6 +124,21 @@ export function LeagueTable() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-accent/20 px-6 py-8 text-center">
+        <p className="text-sm text-muted-foreground">
+          Log today&apos;s behaviours to update points and form.
+        </p>
+        <Button
+          asChild
+          className="rounded-full bg-brand-green px-8 text-sm font-bold text-primary-foreground hover:bg-brand-green/90"
+        >
+          <Link href="/stats">
+            <ClipboardList />
+            Enter daily stats
+          </Link>
+        </Button>
       </div>
     </section>
   )

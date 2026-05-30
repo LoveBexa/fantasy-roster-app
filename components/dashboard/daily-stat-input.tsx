@@ -1,228 +1,416 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
-import {
-  CalendarDays,
-  ChevronDown,
-  CalendarCheck,
-  MessageCircleHeart,
-  Star,
-  CircleCheck,
-  Smile,
-  Sun,
-  MessagesSquare,
-  Send,
-  Clock,
-  MessageCircleDashed,
-  CircleX,
-  CloudFog,
-  Thermometer,
-  Ghost,
-  Pencil,
-} from "lucide-react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { CalendarDays, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { HeartDoodle, ArrowDoodle } from "@/components/doodles"
+import { Label } from "@/components/ui/label"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { HeartDoodle } from "@/components/doodles"
 import { FormChart } from "@/components/dashboard/form-chart"
+import { createClient } from "@/lib/supabase/client"
+import { getErrorMessage } from "@/lib/supabase/errors"
+import { fetchRosterPlayers } from "@/lib/roster/players"
+import type { Player } from "@/components/roster/roster-types"
+import { getBehaviorIcon } from "@/lib/stats/behavior-icons"
+import {
+  fetchPlayerWeeklyForm,
+  fetchScoringBehaviors,
+  saveStatEntry,
+  type FormChartPoint,
+  type ScoringBehaviorRow,
+} from "@/lib/stats/stat-entries"
 
-type Stat = {
-  id: string
-  label: string
-  pts: number
-  icon: React.ComponentType<{ className?: string }>
-  sub?: string
+function todayIsoDate() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
 }
 
-const positives: Stat[] = [
-  { id: "planned", label: "Planned Something", pts: 15, icon: CalendarCheck },
-  { id: "great-comm", label: "Great Communication", pts: 10, icon: MessageCircleHeart },
-  { id: "detail", label: "Remembered Little Detail", pts: 5, icon: Star },
-  { id: "followed", label: "Followed Through", pts: 5, icon: CircleCheck },
-  { id: "laugh", label: "Made Me Laugh", pts: 3, icon: Smile },
-  { id: "morning", label: "Good Morning Text", pts: 2, icon: Sun },
-  { id: "checkin", label: "Consistent Check-ins", pts: 3, icon: MessagesSquare },
-  { id: "initiated", label: "Initiated Plans", pts: 5, icon: Send },
-]
-
-const negatives: Stat[] = [
-  { id: "late", label: "Late Reply", sub: "(> 6 HRS)", pts: -5, icon: Clock },
-  { id: "dry", label: "Dry Conversation", pts: -5, icon: MessageCircleDashed },
-  { id: "cancelled", label: "Cancelled Last Minute", pts: -15, icon: CircleX },
-  { id: "distant", label: "Felt Distant", pts: -10, icon: CloudFog },
-  { id: "hotcold", label: "Hot & Cold Behaviour", pts: -10, icon: Thermometer },
-  { id: "ghosted", label: "Ghosted", pts: -20, icon: Ghost },
-]
-
-const allStats = [...positives, ...negatives]
+const emptyWeek: FormChartPoint[] = Array.from({ length: 7 }, (_, i) => {
+  const date = new Date()
+  date.setDate(date.getDate() - 6 + i)
+  return {
+    day: date.toLocaleDateString("en-US", { weekday: "narrow" }),
+    value: 0,
+  }
+})
 
 export function DailyStatInput() {
-  const [selected, setSelected] = useState<string[]>(["planned"])
+  const notesRef = useRef<HTMLTextAreaElement>(null)
+  const [players, setPlayers] = useState<Player[]>([])
+  const [behaviors, setBehaviors] = useState<ScoringBehaviorRow[]>([])
+  const [selectedPlayerId, setSelectedPlayerId] = useState("")
+  const [entryDate, setEntryDate] = useState(todayIsoDate)
+  const [selectedBehaviorIds, setSelectedBehaviorIds] = useState<string[]>([])
   const [notes, setNotes] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [weeklyForm, setWeeklyForm] = useState<FormChartPoint[]>(emptyWeek)
 
-  const toggle = (id: string) =>
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
+  const loadWeeklyForm = useCallback(async (playerId: string) => {
+    if (!playerId) {
+      setWeeklyForm(emptyWeek)
+      return
+    }
+
+    try {
+      const supabase = createClient()
+      const points = await fetchPlayerWeeklyForm(supabase, playerId)
+      setWeeklyForm(points)
+    } catch {
+      setWeeklyForm(emptyWeek)
+    }
+  }, [])
+
+  const loadData = useCallback(async () => {
+    setError(null)
+    setIsLoading(true)
+
+    try {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        setError("Sign in to log daily stats.")
+        return
+      }
+
+      const [playerRows, behaviorRows] = await Promise.all([
+        fetchRosterPlayers(supabase),
+        fetchScoringBehaviors(supabase),
+      ])
+
+      setPlayers(playerRows)
+      setBehaviors(behaviorRows)
+      setSelectedPlayerId((current) => current || playerRows[0]?.id || "")
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not load stat input data."))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadData()
+  }, [loadData])
+
+  useEffect(() => {
+    void loadWeeklyForm(selectedPlayerId)
+  }, [selectedPlayerId, loadWeeklyForm])
+
+  const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
+
+  const pointsImpact = useMemo(() => {
+    return selectedBehaviorIds.reduce((sum, id) => {
+      const behavior = behaviors.find((b) => b.id === id)
+      return sum + (behavior?.points ?? 0)
+    }, 0)
+  }, [behaviors, selectedBehaviorIds])
+
+  const toggleBehavior = (behaviorId: string) => {
+    setSelectedBehaviorIds((prev) =>
+      prev.includes(behaviorId)
+        ? prev.filter((id) => id !== behaviorId)
+        : [...prev, behaviorId]
     )
+  }
+
+  const focusNotes = () => {
+    notesRef.current?.focus()
+    notesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+  }
+
+  const handleSave = async () => {
+    setError(null)
+    setSuccessMessage(null)
+
+    if (!selectedPlayerId) {
+      setError("Select a player first.")
+      return
+    }
+
+    if (selectedBehaviorIds.length === 0) {
+      setError("Select at least one behaviour.")
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        setError("Sign in to save entries.")
+        return
+      }
+
+      await saveStatEntry(supabase, user.id, {
+        player_id: selectedPlayerId,
+        entry_date: entryDate,
+        notes: notes.trim() || null,
+        behavior_ids: selectedBehaviorIds,
+        total_points: pointsImpact,
+      })
+
+      setSuccessMessage("Entry saved! Your stats are in the league.")
+      setSelectedBehaviorIds([])
+      setNotes("")
+      await loadWeeklyForm(selectedPlayerId)
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not save entry."))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <p className="text-sm text-muted-foreground">Loading daily stat input...</p>
+    )
+  }
 
   return (
-    <section aria-labelledby="daily-stat-heading">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1
-              id="daily-stat-heading"
-              className="font-serif text-4xl font-bold tracking-tight text-primary"
-            >
-              DAILY STAT INPUT
-            </h1>
-            <HeartDoodle className="size-8 text-primary" />
+    <TooltipProvider>
+      <section aria-labelledby="daily-stat-heading" className="space-y-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1
+                id="daily-stat-heading"
+                className="font-serif text-4xl font-bold tracking-tight text-primary"
+              >
+                DAILY STAT INPUT
+              </h1>
+              <HeartDoodle className="size-8 text-primary" />
+            </div>
+            <p className="mt-2 font-script text-xl text-muted-foreground">
+              Log the tea. Earn the points. See the pattern.
+            </p>
           </div>
-          <p className="mt-2 font-script text-xl text-muted-foreground">
-            Log the tea. Earn the points. See the pattern.
-          </p>
-        </div>
-        <div className="flex flex-col items-end gap-2">
-          <Button className="gap-2 rounded-full bg-brand-green text-xs font-bold uppercase tracking-wide text-primary-foreground hover:bg-brand-green/90">
-            Select Date
-            <CalendarDays className="size-4" />
-          </Button>
-          <button className="flex items-center gap-1 text-sm text-foreground">
-            May 18, 2026 <ChevronDown className="size-4 text-muted-foreground" />
-          </button>
-        </div>
-      </div>
 
-      {/* Profile card */}
-      <div className="mt-6 rounded-2xl border border-border bg-card p-6">
-        <div className="flex flex-col gap-6 lg:flex-row">
-          <div className="flex items-start gap-4">
-            <Image
-              src="/images/alex-avatar.png"
-              alt="Alex M. profile"
-              width={88}
-              height={88}
-              className="size-20 rounded-full object-cover"
-            />
-            <div>
-              <h2 className="font-serif text-2xl font-bold text-foreground">Alex M.</h2>
-              <p className="text-sm text-muted-foreground">@coffeeandconvos</p>
-              <p className="mt-1 text-sm text-muted-foreground">Last date: May 16, 2026</p>
-              <span className="mt-2 inline-block rounded-full bg-brand-green px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary-foreground">
-                Active
-              </span>
-              <div className="mt-3 flex items-center gap-1 text-muted-foreground">
-                <span className="font-script text-base">he&apos;s cute but inconsistent</span>
-                <ArrowDoodle className="size-6" />
+          <div className="flex flex-col gap-3 sm:items-end">
+            <div className="space-y-1">
+              <Label htmlFor="entry-date" className="text-xs font-bold uppercase tracking-wide">
+                Entry date
+              </Label>
+              <div className="relative">
+                <CalendarDays className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  id="entry-date"
+                  type="date"
+                  value={entryDate}
+                  onChange={(e) => setEntryDate(e.target.value)}
+                  className="h-10 rounded-full border border-border bg-card pl-9 pr-4 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                />
               </div>
             </div>
-            <Button variant="outline" className="ml-2 rounded-full border-border bg-card text-xs font-semibold">
-              View Profile
-            </Button>
+          </div>
+        </div>
+
+        {successMessage ? (
+          <p
+            className="rounded-lg border border-brand-green/30 bg-brand-green/10 px-4 py-3 text-sm font-medium text-brand-green"
+            role="status"
+          >
+            {successMessage}
+          </p>
+        ) : null}
+
+        {error ? (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive" role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        <div className="rounded-2xl border border-border bg-card p-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="player-select" className="text-xs font-bold uppercase tracking-wide">
+                Player
+              </Label>
+              <select
+                id="player-select"
+                value={selectedPlayerId}
+                onChange={(e) => setSelectedPlayerId(e.target.value)}
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground"
+              >
+                <option value="">Select a player</option>
+                {players.map((player) => (
+                  <option key={player.id} value={player.id}>
+                    {player.emoji} {player.nickname}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedPlayer ? (
+              <div className="flex items-center gap-4">
+                <span className="flex size-16 items-center justify-center rounded-full bg-brand-pink/40 text-3xl">
+                  {selectedPlayer.emoji}
+                </span>
+                <div>
+                  <p className="font-serif text-xl font-bold text-foreground">
+                    {selectedPlayer.nickname}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{selectedPlayer.description}</p>
+                  <p className="mt-1 text-xs font-medium uppercase tracking-wide text-brand-green">
+                    {selectedPlayer.status}
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </div>
 
-          <div className="grid flex-1 grid-cols-1 gap-6 rounded-xl bg-accent/30 p-5 sm:grid-cols-2">
+          <div className="mt-6 grid gap-6 rounded-xl bg-accent/30 p-5 sm:grid-cols-2">
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Today&apos;s Points Impact
               </p>
               <p className="mt-1 font-serif text-5xl font-bold text-primary">
-                +12 <span className="text-lg font-semibold">PTS</span>
+                {pointsImpact >= 0 ? "+" : ""}
+                {pointsImpact} <span className="text-lg font-semibold">PTS</span>
               </p>
-              <p className="mt-3 text-sm text-muted-foreground">This week: +18 pts</p>
-              <p className="text-sm text-muted-foreground">Season total: 228 pts</p>
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Form (Last 7 Days)
               </p>
-              <FormChart />
+              <FormChart data={weeklyForm} />
             </div>
           </div>
         </div>
-      </div>
 
-      {/* What happened today */}
-      <div className="mt-8">
-        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
-          What Happened Today?
-        </h3>
-        <p className="mt-1 text-sm font-semibold text-primary">Select all that apply</p>
+        {players.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Add roster players first before logging stats.
+          </p>
+        ) : null}
 
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {allStats.map((stat) => {
-            const isSelected = selected.includes(stat.id)
-            const isNegative = stat.pts < 0
-            return (
-              <button
-                key={stat.id}
-                type="button"
-                onClick={() => toggle(stat.id)}
-                aria-pressed={isSelected}
-                className={`relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all ${
-                  isSelected
-                    ? "border-foreground/40 ring-2 ring-foreground/20"
-                    : "border-border hover:border-foreground/30"
-                } ${isNegative ? "bg-brand-pink/25" : "bg-card"}`}
-              >
-                {isSelected && (
-                  <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-brand-green text-[10px] text-primary-foreground">
-                    ✓
-                  </span>
-                )}
-                <stat.icon
-                  className={`size-6 ${isNegative ? "text-primary" : "text-foreground/70"}`}
-                />
-                <span className="text-xs font-bold uppercase leading-tight text-foreground">
-                  {stat.label}
-                  {stat.sub && <span className="block font-medium normal-case">{stat.sub}</span>}
-                </span>
-                <span
-                  className={`text-xs font-semibold ${isNegative ? "text-primary" : "text-brand-green"}`}
-                >
-                  {stat.pts > 0 ? `+${stat.pts}` : stat.pts} pts
-                </span>
-              </button>
-            )
-          })}
-          <button
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
+            What Happened Today?
+          </h3>
+          <p className="mt-1 text-sm font-semibold text-primary">Select all that apply</p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {behaviors.map((behavior) => {
+              const isSelected = selectedBehaviorIds.includes(behavior.id)
+              const isNegative = behavior.points < 0
+              const Icon = getBehaviorIcon(behavior.category, behavior.behavior)
+
+              return (
+                <Tooltip key={behavior.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => toggleBehavior(behavior.id)}
+                      aria-pressed={isSelected}
+                      className={`relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all ${
+                        isSelected
+                          ? "border-foreground/40 bg-accent/60 ring-2 ring-foreground/20"
+                          : "border-border hover:border-foreground/30"
+                      } ${isNegative ? "bg-brand-pink/25" : "bg-card"}`}
+                    >
+                      {isSelected ? (
+                        <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-brand-green text-[10px] text-primary-foreground">
+                          ✓
+                        </span>
+                      ) : null}
+                      <Icon
+                        className={`size-6 ${isNegative ? "text-primary" : "text-foreground/70"}`}
+                      />
+                      <span className="text-xs font-bold uppercase leading-tight text-foreground">
+                        {behavior.behavior}
+                      </span>
+                      <span
+                        className={`text-xs font-semibold ${
+                          isNegative ? "text-primary" : "text-brand-green"
+                        }`}
+                      >
+                        {behavior.points > 0 ? `+${behavior.points}` : behavior.points} pts
+                      </span>
+                    </button>
+                  </TooltipTrigger>
+                  {behavior.description ? (
+                    <TooltipContent side="top" className="max-w-xs">
+                      {behavior.description}
+                    </TooltipContent>
+                  ) : null}
+                </Tooltip>
+              )
+            })}
+
+            <button
+              type="button"
+              onClick={focusNotes}
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card p-4 text-center hover:border-foreground/30"
+            >
+              <Pencil className="size-6 text-foreground/70" />
+              <span className="text-xs font-bold uppercase text-foreground">Other / Notes</span>
+              <span className="text-xs text-muted-foreground">Add custom</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="notes" className="text-sm font-bold uppercase tracking-wide text-foreground">
+            Notes (Optional)
+          </label>
+          <div className="relative mt-2">
+            <textarea
+              ref={notesRef}
+              id="notes"
+              value={notes}
+              maxLength={250}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any context... the vibes, the tea, the details."
+              className="h-28 w-full resize-none rounded-xl border border-border bg-card p-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
+            />
+            <span className="absolute bottom-3 right-4 text-xs text-muted-foreground">
+              {notes.length}/250
+            </span>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button
             type="button"
-            className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card p-4 text-center hover:border-foreground/30"
+            variant="outline"
+            disabled={isSaving}
+            className="rounded-full border-primary px-8 text-sm font-semibold text-primary hover:bg-primary/5"
+            onClick={() => {
+              setSelectedBehaviorIds([])
+              setNotes("")
+              setSuccessMessage(null)
+              setError(null)
+            }}
           >
-            <Pencil className="size-6 text-foreground/70" />
-            <span className="text-xs font-bold uppercase text-foreground">Other / Notes</span>
-            <span className="text-xs text-muted-foreground">Add custom</span>
-          </button>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            disabled={isSaving || players.length === 0}
+            onClick={() => void handleSave()}
+            className="rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+          >
+            {isSaving ? "Saving..." : "Save Entry"}
+          </Button>
         </div>
-      </div>
-
-      {/* Notes */}
-      <div className="mt-8">
-        <label htmlFor="notes" className="text-sm font-bold uppercase tracking-wide text-foreground">
-          Notes (Optional)
-        </label>
-        <div className="relative mt-2">
-          <textarea
-            id="notes"
-            value={notes}
-            maxLength={250}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add any context... the vibes, the tea, the details."
-            className="h-28 w-full resize-none rounded-xl border border-border bg-card p-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
-          />
-          <span className="absolute bottom-3 right-4 text-xs text-muted-foreground">
-            {notes.length}/250
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-6 flex justify-end gap-3">
-        <Button variant="outline" className="rounded-full border-primary px-8 text-sm font-semibold text-primary hover:bg-primary/5">
-          Cancel
-        </Button>
-        <Button className="rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90">
-          Save Entry
-        </Button>
-      </div>
-    </section>
+      </section>
+    </TooltipProvider>
   )
 }

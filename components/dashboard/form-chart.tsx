@@ -1,18 +1,19 @@
 "use client"
 
+import { useMemo } from "react"
 import { Line, LineChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import type { FormChartPoint } from "@/lib/stats/stat-entries"
 
-const data = [
-  { day: "M", value: -8 },
-  { day: "T", value: -4 },
-  { day: "W", value: 2 },
-  { day: "T", value: -2 },
-  { day: "F", value: 6 },
-  { day: "S", value: 12 },
-  { day: "S", value: 20 },
-]
+type FormChartProps = {
+  data: FormChartPoint[]
+}
 
-export function FormChart() {
+export function FormChart({ data }: FormChartProps) {
+  const yBound = useMemo(() => {
+    const maxAbs = Math.max(20, ...data.map((point) => Math.abs(point.value)))
+    return Math.ceil(maxAbs / 5) * 5
+  }, [data])
+
   return (
     <div className="mt-2 h-28 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -25,8 +26,8 @@ export function FormChart() {
             tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
           />
           <YAxis
-            domain={[-20, 20]}
-            ticks={[-20, 0, 20]}
+            domain={[-yBound, yBound]}
+            ticks={[-yBound, 0, yBound]}
             tickLine={false}
             axisLine={false}
             tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
