@@ -12,11 +12,11 @@ export function SiteNavbar() {
     <header className="border-b border-border/60">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
         <Link href="#" className="flex flex-col leading-none">
-          <span className="font-serif text-2xl font-bold tracking-tight text-primary">
-            LEVEL UP
+          <span className="font-serif text-xl font-bold leading-tight tracking-tight text-primary">
+            THE ROSTER
           </span>
           <span className="text-[0.65rem] font-medium tracking-[0.45em] text-primary/80">
-            ROSTER
+            FANTASY LEAGUE
           </span>
         </Link>
 

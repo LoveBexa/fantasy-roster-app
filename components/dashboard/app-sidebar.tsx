@@ -20,7 +20,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "League Table", icon: Trophy, href: "/dashboard" },
   { label: "My Roster", icon: Heart, href: "/roster" },
-  { label: "Account", icon: Settings, href: "#" },
+  { label: "Account", icon: Settings, href: "/account" },
 ]
 
 export type SidebarActivePage = NavItem["label"]
@@ -40,11 +40,11 @@ export function AppSidebar({ activePage }: AppSidebarProps) {
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-card/60 px-4 py-6">
       <div className="px-2">
-        <h2 className="font-serif text-2xl font-bold leading-none tracking-tight text-primary">
-          LEVEL UP
+        <h2 className="font-serif text-xl font-bold leading-tight tracking-tight text-primary">
+          THE ROSTER
         </h2>
         <p className="mt-1 text-xs font-semibold tracking-[0.3em] text-muted-foreground">
-          ROSTER
+          FANTASY LEAGUE
         </p>
       </div>
 

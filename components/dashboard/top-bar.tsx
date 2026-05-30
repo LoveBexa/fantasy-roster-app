@@ -48,11 +48,17 @@ export function TopBar({ user }: TopBarProps) {
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted"
           >
             <Avatar className="size-9">
-              {user?.avatarUrl ? (
+              {!user?.avatarEmoji && user?.avatarUrl ? (
                 <AvatarImage src={user.avatarUrl} alt={`${user.name}'s profile`} />
               ) : null}
-              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-                {user ? getInitials(user.name) : "?"}
+              <AvatarFallback
+                className={
+                  user?.avatarEmoji
+                    ? "bg-brand-pink/60 text-lg"
+                    : "bg-primary/10 text-xs font-semibold text-primary"
+                }
+              >
+                {user?.avatarEmoji ?? (user ? getInitials(user.name) : "?")}
               </AvatarFallback>
             </Avatar>
             <span className="text-sm font-semibold text-foreground">{greeting}</span>
