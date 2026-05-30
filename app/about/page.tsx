@@ -17,10 +17,10 @@ export default function AboutPage() {
         <AboutPageContent />
 
         <div className="mt-8 flex justify-center border-t border-dashed border-border pt-8">
-          <Button
-            asChild
-            className="rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-          >
+        <Button
+  asChild
+  className="rounded-full bg-primary px-10 py-6 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
+>
             <Link href="/">Join the league</Link>
           </Button>
         </div>

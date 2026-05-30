@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import {
   Check,
   ChevronRight,
@@ -145,16 +146,14 @@ export function HowItWorksContent() {
             </Button>
           </div>
 
-          <div className="relative flex min-h-72 items-center justify-center bg-[#5c6b4a] px-8 py-10 lg:min-h-full">
-            <div className="relative w-full max-w-sm rounded-sm bg-[#3d4a32] p-8 shadow-xl">
-              <p className="text-center font-serif text-3xl font-bold leading-tight tracking-[0.35em] text-amber-100/90">
-                TRACK
-                <br />
-                RANK
-                <br />
-                WIN
-              </p>
-            </div>
+          <div className="relative min-h-72 bg-accent/40 lg:min-h-full">
+            <Image
+              src="/images/women-looking-phone.png"
+              alt="Women reviewing their roster on a phone"
+              width={700}
+              height={520}
+              className="h-full min-h-72 w-full object-cover lg:min-h-full"
+            />
           </div>
         </div>
       </section>

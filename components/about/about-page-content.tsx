@@ -89,8 +89,8 @@ export function AboutPageContent() {
 
           <div className="relative min-h-64 bg-accent/40 lg:min-h-full">
             <Image
-              src="/images/three-women.png"
-              alt="Three confident women seated together"
+              src="/images/four-women.png"
+              alt="Four confident women posing together"
               width={700}
               height={520}
               className="h-full w-full object-cover"
