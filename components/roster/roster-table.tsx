@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Image from "next/image"
 import { Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { HeartDoodle, StarDoodle } from "@/components/doodles"
 import { createClient } from "@/lib/supabase/client"
 import {
@@ -158,27 +159,22 @@ export function RosterTable() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="font-serif text-5xl font-bold tracking-tight text-primary">
-              MY ROSTERS
-            </h1>
-            <HeartDoodle className="size-8 text-primary" />
-          </div>
-          <p className="mt-2 font-script text-xl text-muted-foreground">
-            You&apos;re the coach. Build your roster. Track the potential.
-          </p>
-        </div>
-        <Button
-          onClick={() => setShowAddForm(!showAddForm)}
-          disabled={isSaving}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          {showAddForm ? "✕ CLOSE" : "+ ADD PLAYER"}
-        </Button>
-      </div>
+    <section aria-labelledby="roster-heading" className="space-y-6">
+      <PageHeader
+        id="roster-heading"
+        title="MY ROSTERS"
+        subtitle="You're the coach. Build your roster. Track the potential."
+        icon={<HeartDoodle className="size-8 text-primary" />}
+        action={
+          <Button
+            onClick={() => setShowAddForm(!showAddForm)}
+            disabled={isSaving}
+            className="rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+          >
+            {showAddForm ? "✕ CLOSE" : "+ ADD PLAYER"}
+          </Button>
+        }
+      />
 
       {error ? (
         <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive" role="alert">
@@ -377,6 +373,6 @@ export function RosterTable() {
         <StarDoodle className="size-4" />
         <span className="font-script text-lg">Healthy rosters. Happy hearts.</span>
       </div>
-    </div>
+    </section>
   )
 }

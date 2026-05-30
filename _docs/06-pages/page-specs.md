@@ -13,7 +13,7 @@
 **Design**: Split screen — left hero panel, right form panel  
 **Left panel** (`LoginHero`): Olive green background, handwritten taglines, circle badge  
 **Right panel** (`LoginForm`):
-- Heading: "Welcome back, Boss Babe."
+- Heading: "Welcome back, Roster Manager."
 - Subheading (crimson italic): "Log in to check your league."
 - Email + Password fields
 - "Forgot your password?" link (placeholder)

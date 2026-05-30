@@ -186,7 +186,7 @@ export function AddPlayerForm({ onAdd, onCancel, isSubmitting = false }: AddPlay
         <Button
           onClick={() => void handleSubmit()}
           disabled={!nickname.trim() || isSubmitting}
-          className="bg-brand-green text-white hover:bg-brand-green/90"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {isSubmitting ? "ADDING..." : "ADD PLAYER"}
         </Button>

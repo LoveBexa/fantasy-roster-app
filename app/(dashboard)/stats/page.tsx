@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import { DashboardMain } from "@/components/dashboard/dashboard-main"
 import { TopBar } from "@/components/dashboard/top-bar"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { DailyStatInput } from "@/components/dashboard/daily-stat-input"
@@ -31,11 +32,9 @@ export default async function DailyStatsPage() {
         <TopBar user={userDisplay} />
 
         <div className="flex min-w-0 flex-1">
-          <main className="min-w-0 flex-1 overflow-y-auto px-8 py-8">
-            <div className="mx-auto max-w-5xl">
-              <DailyStatInput />
-            </div>
-          </main>
+          <DashboardMain>
+            <DailyStatInput />
+          </DashboardMain>
 
           <RightRail />
         </div>

@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { ArrowUp, ArrowDown, ClipboardList } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { StarDoodle, CrownDoodle } from "@/components/doodles"
 
 type Player = {
@@ -32,18 +33,15 @@ export function LeagueTable() {
   const [active, setActive] = useState("Overall")
 
   return (
-    <section aria-labelledby="league-heading">
-      <div className="flex items-center gap-3">
-        <h2 id="league-heading" className="font-serif text-4xl font-bold tracking-tight text-primary">
-          LEAGUE TABLE
-        </h2>
-        <StarDoodle className="size-9 text-brand-green" />
-      </div>
-      <p className="mt-2 font-script text-xl text-muted-foreground">
-        Rank your dates. Track the stats. Don&apos;t settle. Win the league.
-      </p>
+    <section aria-labelledby="league-heading" className="space-y-6">
+      <PageHeader
+        id="league-heading"
+        title="LEAGUE TABLE"
+        subtitle="Rank your dates. Track the stats. Don't settle. Win the league."
+        icon={<StarDoodle className="size-8 text-primary" />}
+      />
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -51,7 +49,7 @@ export function LeagueTable() {
             onClick={() => setActive(tab)}
             className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors ${
               active === tab
-                ? "bg-brand-green text-primary-foreground"
+                ? "bg-primary text-primary-foreground"
                 : "text-primary hover:bg-muted"
             }`}
           >
@@ -60,7 +58,7 @@ export function LeagueTable() {
         ))}
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
         {/* header row */}
         <div className="grid grid-cols-[3rem_1fr_5rem_5rem_6rem] gap-2 border-b border-border px-5 py-3 text-xs font-bold uppercase tracking-wide text-muted-foreground sm:grid-cols-[4rem_1fr_7rem_7rem_8rem]">
           <span>Rank</span>
@@ -132,7 +130,7 @@ export function LeagueTable() {
         </p>
         <Button
           asChild
-          className="rounded-full bg-brand-green px-8 text-sm font-bold text-primary-foreground hover:bg-brand-green/90"
+          className="rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90"
         >
           <Link href="/stats">
             <ClipboardList />

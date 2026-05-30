@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { CalendarDays, Pencil } from "lucide-react"
+import Link from "next/link"
+import { CalendarDays, Heart, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/tooltip"
 import { HeartDoodle } from "@/components/doodles"
 import { FormChart } from "@/components/dashboard/form-chart"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { createClient } from "@/lib/supabase/client"
 import { getErrorMessage } from "@/lib/supabase/errors"
 import { fetchRosterPlayers } from "@/lib/roster/players"
@@ -186,23 +188,12 @@ export function DailyStatInput() {
   return (
     <TooltipProvider>
       <section aria-labelledby="daily-stat-heading" className="space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1
-                id="daily-stat-heading"
-                className="font-serif text-4xl font-bold tracking-tight text-primary"
-              >
-                DAILY STAT INPUT
-              </h1>
-              <HeartDoodle className="size-8 text-primary" />
-            </div>
-            <p className="mt-2 font-script text-xl text-muted-foreground">
-              Log the tea. Earn the points. See the pattern.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:items-end">
+        <PageHeader
+          id="daily-stat-heading"
+          title="DAILY STAT INPUT"
+          subtitle="Log the tea. Earn the points. See the pattern."
+          icon={<HeartDoodle className="size-8 text-primary" />}
+          action={
             <div className="space-y-1">
               <Label htmlFor="entry-date" className="text-xs font-bold uppercase tracking-wide">
                 Entry date
@@ -218,8 +209,8 @@ export function DailyStatInput() {
                 />
               </div>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {successMessage ? (
           <p
@@ -295,9 +286,20 @@ export function DailyStatInput() {
         </div>
 
         {players.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Add roster players first before logging stats.
-          </p>
+          <div className="flex flex-col items-start gap-3 rounded-2xl border border-dashed border-border bg-accent/20 px-6 py-6">
+            <p className="text-sm text-muted-foreground">
+              Add roster players first before logging stats.
+            </p>
+            <Button
+              asChild
+              className="rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+            >
+              <Link href="/roster">
+                <Heart />
+                Add players to roster
+              </Link>
+            </Button>
+          </div>
         ) : null}
 
         <div>
@@ -326,7 +328,7 @@ export function DailyStatInput() {
                       } ${isNegative ? "bg-brand-pink/25" : "bg-card"}`}
                     >
                       {isSelected ? (
-                        <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-brand-green text-[10px] text-primary-foreground">
+                        <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
                           ✓
                         </span>
                       ) : null}

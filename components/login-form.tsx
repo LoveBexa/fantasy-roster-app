@@ -2,15 +2,16 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AppleIcon, GoogleIcon, StarDoodle } from "@/components/doodles"
 import { createClient } from "@/lib/supabase/client"
 
+const emailPasswordDisabled = true
+
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
 
@@ -37,7 +38,7 @@ export function LoginForm() {
       <StarDoodle className="absolute -top-2 right-0 size-12 text-muted-foreground/50" />
 
       <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground text-balance">
-        Welcome back, Boss Babe.
+        Welcome back, Roster Boss.
       </h1>
       <p className="mt-2 font-script text-2xl text-primary">
         Log in to check your league.
@@ -56,7 +57,8 @@ export function LoginForm() {
             type="email"
             placeholder="Email address"
             autoComplete="email"
-            className="h-12 rounded-lg border-border bg-card px-4 text-base"
+            disabled={emailPasswordDisabled}
+            className="h-12 rounded-lg border-border bg-card px-4 text-base disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 
@@ -67,32 +69,34 @@ export function LoginForm() {
           <div className="relative">
             <Input
               id="password"
-              type={showPassword ? "text" : "password"}
+              type="password"
               placeholder="Password"
               autoComplete="current-password"
-              className="h-12 rounded-lg border-border bg-card px-4 pr-12 text-base"
+              disabled={emailPasswordDisabled}
+              className="h-12 rounded-lg border-border bg-card px-4 pr-12 text-base disabled:cursor-not-allowed disabled:opacity-50"
             />
             <button
               type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              disabled={emailPasswordDisabled}
+              aria-label="Show password"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+              <Eye className="size-5" />
             </button>
           </div>
         </div>
 
-        <Link
-          href="#"
-          className="inline-block text-sm font-semibold text-foreground hover:text-primary"
+        <span
+          className="inline-block text-sm font-semibold text-muted-foreground/60 cursor-not-allowed"
+          aria-disabled="true"
         >
           Forgot your password?
-        </Link>
+        </span>
 
         <Button
-          type="submit"
-          className="h-12 w-full rounded-full bg-primary text-sm font-bold tracking-widest text-primary-foreground hover:bg-primary/90"
+          type="button"
+          disabled={emailPasswordDisabled}
+          className="h-12 w-full rounded-full bg-primary text-sm font-bold tracking-widest text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           LOG IN
         </Button>
@@ -122,8 +126,10 @@ export function LoginForm() {
           {googleLoading ? "Redirecting..." : "Continue with Google"}
         </Button>
         <Button
+          type="button"
           variant="outline"
-          className="h-12 w-full justify-center gap-3 rounded-lg border-border bg-card font-semibold text-foreground hover:bg-muted"
+          disabled
+          className="h-12 w-full justify-center gap-3 rounded-lg border-border bg-card font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <AppleIcon className="size-5" />
           Continue with Apple

@@ -35,11 +35,11 @@ export const RELATIONSHIP_STATUSES: {
   description: string
 }[] = [
   { value: "Potential Partner", emoji: "💕", description: "Relationship candidate" },
-  { value: "Situationship", emoji: "😏", description: "Undefined chaos" },
+  { value: "Situationship", emoji: "😏", description: "Uncommited relationship-vibes" },
   { value: "Casual", emoji: "🍿", description: "Seeing each other casually" },
   { value: "FWB", emoji: "🔥", description: "Friends with benefits" },
-  { value: "Breadcrumber", emoji: "🧵", description: "Gives just enough attention to stay relevant" },
-  { value: "Orbiter", emoji: "🪃", description: "Watches stories, never messages" },
+  { value: "Breadcrumber", emoji: "🧵", description: "Gives minimal attention to stay relevant" },
+  { value: "Orbiter", emoji: "🪃", description: "Hovers on social, never messages" },
 ]
 
 export const EMOJI_OPTIONS = [

@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import { DashboardMain } from "@/components/dashboard/dashboard-main"
 import { TopBar } from "@/components/dashboard/top-bar"
 import { LeagueTable } from "@/components/dashboard/league-table"
 import { RightRail } from "@/components/dashboard/right-rail"
@@ -20,9 +21,9 @@ export default async function DashboardPage() {
         <TopBar user={userDisplay} />
 
         <div className="flex min-w-0 flex-1">
-          <main className="min-w-0 flex-1 px-8 py-8">
+          <DashboardMain>
             <LeagueTable />
-          </main>
+          </DashboardMain>
 
           <RightRail />
         </div>

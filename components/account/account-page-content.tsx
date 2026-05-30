@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Check, Pencil, Trash2 } from "lucide-react"
 import { GoogleIcon, HeartDoodle, StarDoodle } from "@/components/doodles"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -36,7 +37,7 @@ function SectionHeading({
 }) {
   return (
     <div>
-      <h2 className="text-sm font-bold uppercase tracking-wide text-brand-green">{title}</h2>
+      <h2 className="text-sm font-bold uppercase tracking-wide text-primary">{title}</h2>
       <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
     </div>
   )
@@ -120,19 +121,13 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-10">
-      <header>
-        <div className="flex items-center gap-3">
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-primary">
-            MY ACCOUNT
-          </h1>
-          <HeartDoodle className="size-8 text-primary/80" />
-        </div>
-        <p className="mt-2 text-muted-foreground">
-          Your account, your data, your roster.
-        </p>
-        <div className="mt-6 border-t border-dashed border-border" />
-      </header>
+    <section aria-labelledby="account-heading" className="space-y-6">
+      <PageHeader
+        id="account-heading"
+        title="MY ACCOUNT"
+        subtitle="Your account, your data, your roster."
+        icon={<HeartDoodle className="size-8 text-primary" />}
+      />
 
       {/* Avatar */}
       <section className="space-y-5">
@@ -344,6 +339,6 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
           </a>
         </p>
       </div>
-    </div>
+    </section>
   )
 }

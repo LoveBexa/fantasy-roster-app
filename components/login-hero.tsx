@@ -3,7 +3,7 @@ import { HeartDoodle } from "@/components/doodles"
 
 export function LoginHero() {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-brand-green">
+    <div className="relative overflow-hidden rounded-3xl bg-primary">
       <Image
         src="/images/three-women.png"
         alt="Three confident women seated together in tailored blazers"

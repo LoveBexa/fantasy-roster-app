@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import { DashboardMain } from "@/components/dashboard/dashboard-main"
 import { TopBar } from "@/components/dashboard/top-bar"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { AccountPageContent } from "@/components/account/account-page-content"
@@ -37,9 +38,9 @@ export default async function AccountPage() {
         <TopBar user={userDisplay} />
 
         <div className="flex min-w-0 flex-1">
-          <main className="min-w-0 flex-1 overflow-y-auto px-8 py-8">
+          <DashboardMain>
             <AccountPageContent initialProfile={profile} />
-          </main>
+          </DashboardMain>
 
           <RightRail />
         </div>
