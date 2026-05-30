@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import {
   Trophy,
   Heart,
@@ -13,22 +14,27 @@ import { useLogout } from "@/lib/auth/use-logout"
 type NavItem = {
   label: string
   icon: LucideIcon
-  active?: boolean
-  href?: string
+  href: string
 }
 
 const navItems: NavItem[] = [
-  { label: "League Table", icon: Trophy, active: false, href: "/dashboard" },
-  { label: "My Roster", icon: Heart, active: false, href: "#" },
-  { label: "Settings", icon: Settings, active: false, href: "#" },
+  { label: "League Table", icon: Trophy, href: "/dashboard" },
+  { label: "My Roster", icon: Heart, href: "/roster" },
+  { label: "Settings", icon: Settings, href: "#" },
 ]
+
+export type SidebarActivePage = NavItem["label"]
+
+type AppSidebarProps = {
+  activePage?: SidebarActivePage
+}
 
 const logoutItem = {
   label: "Log out",
   icon: LogOut,
 } as const
 
-export function AppSidebar() {
+export function AppSidebar({ activePage }: AppSidebarProps) {
   const logout = useLogout()
 
   return (
@@ -43,21 +49,25 @@ export function AppSidebar() {
       </div>
 
       <nav className="mt-8 flex flex-col gap-1" aria-label="Main navigation">
-        {navItems.map((item) => (
-          <a
-            key={item.label}
-            href={item.href ?? "#"}
-            aria-current={item.active ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              item.active
-                ? "bg-accent/60 text-primary"
-                : "text-foreground/80 hover:bg-muted"
-            }`}
-          >
-            <item.icon className="size-5 shrink-0" />
-            {item.label}
-          </a>
-        ))}
+        {navItems.map((item) => {
+          const isActive = item.label === activePage
+
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-accent/60 text-primary"
+                  : "text-foreground/80 hover:bg-muted"
+              }`}
+            >
+              <item.icon className="size-5 shrink-0" />
+              {item.label}
+            </Link>
+          )
+        })}
 
         <button
           type="button"
