@@ -130,5 +130,12 @@ export async function saveStatEntry(
 
   if (insertError) throw toError(insertError, "Could not save stat entry behaviors.")
 
+  try {
+    const { syncLeagueSnapshots } = await import("@/lib/league/league-table")
+    await syncLeagueSnapshots(supabase, userId)
+  } catch {
+    // Optional until league_player_snapshots migration is applied.
+  }
+
   return entryId
 }

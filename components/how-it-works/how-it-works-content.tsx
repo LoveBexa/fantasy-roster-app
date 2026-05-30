@@ -19,7 +19,7 @@ const steps = [
     title: "Add players to your roster",
     icon: UserPlus,
     body: "Add the people you're dating. Give them a nickname, status, and emoji.",
-    example: "Ben S. 😎",
+    example: "Hammer Toe Tom. 🦶",
   },
   {
     number: 2,
@@ -125,7 +125,7 @@ export function HowItWorksContent() {
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               You draft. You track. You score points. You rank your roster. It&apos;s
-              strategic dating — backed by data, not drama.
+              strategic dating that's backed by data, not drama.
             </p>
 
             <div className="mt-6 rounded-xl border border-border bg-background px-5 py-4">
@@ -224,7 +224,7 @@ export function HowItWorksContent() {
             <div className="flex items-start gap-3">
               <StarDoodle className="size-5 shrink-0 text-primary" />
               <p className="text-sm leading-relaxed text-muted-foreground">
-                It&apos;s not about collecting options. It&apos;s about recognizing value.
+              It's not about winning. It's about choosing better.
               </p>
             </div>
           </div>

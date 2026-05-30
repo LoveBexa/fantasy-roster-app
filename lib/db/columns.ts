@@ -4,6 +4,7 @@ export const TABLES = {
   scoringBehaviors: "scoring_behaviors",
   statEntries: "stat_entries",
   statEntryBehaviors: "stat_entry_behaviors",
+  leaguePlayerSnapshots: "league_player_snapshots",
 } as const
 
 /** roster_players */
@@ -47,5 +48,16 @@ export const STAT_ENTRY_BEHAVIORS = {
   id: "id",
   entryId: "entry_id",
   behaviorId: "behavior_id",
+  createdAt: "created_at",
+} as const
+
+/** league_player_snapshots */
+export const LEAGUE_PLAYER_SNAPSHOTS = {
+  id: "id",
+  userId: "user_id",
+  playerId: "player_id",
+  snapshotDate: "snapshot_date",
+  rank: "rank",
+  totalPoints: "total_points",
   createdAt: "created_at",
 } as const
