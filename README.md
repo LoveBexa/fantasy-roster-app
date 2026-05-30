@@ -2,7 +2,7 @@
 
 > Track the patterns. Protect your energy. Win the league.
 
-**Level Up Roster** is a dating performance tracker — think fantasy sports, but for your dating life. You add the people you're seeing as **roster players**, log daily behaviours against a points system, and rank everyone in a live **League Table** so patterns show up before emotions take over.
+**Level Up Roster** is a dating performance tracker — think fantasy football, but for your dating life. You add the people you're seeing as **roster players**, log daily behaviours against a points system, and rank everyone in a live **League Table** so patterns show up before emotions take over.
 
 **Tagline:** *Good dates. Good data. Good energy.*
 
