@@ -2,11 +2,45 @@
 
 > Track the patterns. Protect your energy. Win the league.
 
-This knowledge base is the single source of truth for the **Level Up Roster** app — a dating performance tracker that ranks people you're dating using a points-based behaviour system.
+This folder is the **single source of truth** for product, design, and engineering decisions on **Level Up Roster**.
+
+For a GitHub-facing overview and local setup, see the [root README](../README.md).
 
 ---
 
-## 📁 Knowledge Base Structure
+## About the project
+
+**Level Up Roster** is a dating performance tracker — fantasy sports for your dating life. Users add people they're seeing as **roster players**, log **daily stat entries** (40 scored behaviours), and view a ranked **League Table** that surfaces who's rising, who's consistent, and who's a red flag.
+
+**Tagline:** *Good dates. Good data. Good energy.*
+
+### Core loop
+
+1. **Add players** to your roster (nickname, photo, status)
+2. **Log behaviours** after dates or interactions (+3 to +15, or −4 to −20 per behaviour)
+3. **Review rankings** — totals, form trends, MVP / red-flag highlights
+4. **Decide with data** — where to invest energy, who to bench, who to cut
+
+### Who it's for
+
+Women (primarily 25–40) actively dating who want to spot patterns early, reduce emotional fog, and date more intentionally.
+
+### How this docs folder fits in
+
+| You need… | Start here |
+|-----------|------------|
+| Vision, phases, folder structure | [`01-overview/project-overview.md`](./01-overview/project-overview.md) |
+| Colours, typography, tokens | [`02-design/design-system.md`](./02-design/design-system.md) |
+| Tables, RLS, SQL | [`03-database/schema.md`](./03-database/schema.md) |
+| Feature list + auth status | [`04-features/features.md`](./04-features/features.md) |
+| All 40 behaviours + points | [`05-scoring/behaviours-seed.md`](./05-scoring/behaviours-seed.md) |
+| Page layouts + routes | [`06-pages/page-specs.md`](./06-pages/page-specs.md) |
+| Component file paths | [`07-components/components-reference.md`](./07-components/components-reference.md) |
+| Env vars, OAuth, deploy | [`08-deployment/deployment.md`](./08-deployment/deployment.md) |
+
+---
+
+## 📁 Knowledge base structure
 
 | Folder | Contents |
 |--------|----------|
@@ -21,28 +55,36 @@ This knowledge base is the single source of truth for the **Level Up Roster** ap
 
 ---
 
-## 🚀 Current Status
+## 🚀 Current status
 
-- **Phase 5–6 — Dashboard & League Table UI** (in progress in Cursor)
-- **Completed**: Phases 0–4 (machine setup, accounts, scaffold, database); Google OAuth login wired to Supabase
-- **Built in repo**: Login page (`/`), dashboard shell (`/dashboard`) with daily stat input + league table UI, Supabase auth clients + OAuth callback
-- **Next**: Wire dashboard to live Supabase data → route protection in `proxy.ts` → email/password + Apple auth → deploy (Phase 7)
+- **Phase 5–6 — Dashboard & League Table UI** (in progress)
+- **Done**: Scaffold, Supabase schema, Google OAuth login, dashboard UI shell
+- **In repo**: Login (`/`), dashboard (`/dashboard`), `lib/supabase/`, `app/auth/callback/`, `proxy.ts`
+- **Next**: Wire dashboard to live data → route protection → email/Apple auth → deploy (Phase 7)
+
+Key routes today:
+
+| Route | File | Notes |
+|-------|------|-------|
+| `/` | `app/page.tsx` | Login; Google OAuth live |
+| `/dashboard` | `app/dashboard/page.tsx` | Stat input + league table (mock data) |
+| `/auth/callback` | `app/auth/callback/route.ts` | OAuth → session → redirect `/dashboard` |
 
 ---
 
-## ⚡ Quick Reference
+## ⚡ Quick reference
 
 - **Framework**: Next.js 16 (App Router) + TypeScript + Tailwind
 - **Backend**: Supabase (Postgres + Auth + Storage)
 - **UI Library**: shadcn/ui
 - **Deployment**: Vercel
-- **Primary Colour**: Crimson `#8B1A1A`
+- **Primary colour**: Crimson `#8B1A1A`
 - **Background**: Cream `#FAF6F1`
 - **Accent**: Olive `#5C6B3A`
 
 ---
 
-## 🔗 Key External Links
+## 🔗 Key external links
 
 - Supabase Dashboard: `https://supabase.com/dashboard`
 - Vercel Dashboard: `https://vercel.com/dashboard`
