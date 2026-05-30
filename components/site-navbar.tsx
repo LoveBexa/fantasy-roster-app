@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 
 const navLinks = [
   { label: "ABOUT", href: "/about" },
-  { label: "HOW IT WORKS", href: "/about#why-heading" },
+  { label: "HOW IT WORKS", href: "/how-it-works" },
 ]
 
 export function SiteNavbar() {

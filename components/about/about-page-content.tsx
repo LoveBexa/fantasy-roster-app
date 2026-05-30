@@ -10,7 +10,6 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { StarDoodle } from "@/components/doodles"
-import { PageHeader } from "@/components/dashboard/page-header"
 
 const pillars = [
   {
@@ -50,33 +49,41 @@ const manifestoItems = [
 export function AboutPageContent() {
   return (
     <div className="space-y-6">
-      <PageHeader
-        id="about-heading"
-        title="ABOUT LEVEL UP"
-        subtitle="Track the patterns. See the red flags. Know who's actually winning."
-        icon={<StarDoodle className="size-8 text-primary" />}
-      />
-
       <section
-        aria-labelledby="why-heading"
+        aria-labelledby="about-heading"
         className="overflow-hidden rounded-2xl border border-border bg-card"
       >
-        <div className="grid lg:grid-cols-2">
-          <div className="flex flex-col justify-center px-8 py-10 text-center lg:px-10 lg:text-left">
-            <h2
-              id="why-heading"
-              className="text-sm font-bold uppercase tracking-wide text-primary"
+        <div className="border-b border-border px-8 py-8">
+          <div className="flex items-center gap-3">
+            <h1
+              id="about-heading"
+              className="font-serif text-4xl font-bold tracking-tight text-primary"
             >
+              ABOUT THE ROSTER
+            </h1>
+            <StarDoodle className="size-8 text-primary" />
+          </div>
+          <p className="mt-2 font-script text-xl text-muted-foreground">
+            Track the patterns. See the red flags. Know who&apos;s actually winning.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-2">
+          <div
+            id="why-heading"
+            className="flex flex-col justify-center px-8 py-10 text-center lg:px-10 lg:text-left"
+          >
+            <h2 className="text-sm font-bold uppercase tracking-wide text-primary">
               Why We Built This
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Dating shouldn&apos;t feel like guesswork. Level Up Roster turns your love life
+              Dating shouldn&apos;t feel like guesswork. The Roster [Fantasy League] turns your love life
               into a league you can actually read — with stats, patterns, and clarity instead
               of confusion.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               We built this for women who want to date smarter, not harder. Track effort.
-              Spot inconsistency. Make decisions based on data — not drama.
+              Spot inconsistency. Make decisions based on data, not drama.
             </p>
           </div>
 

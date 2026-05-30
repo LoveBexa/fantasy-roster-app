@@ -13,7 +13,7 @@ export default function AboutPage() {
     <main className="min-h-screen bg-background">
       <SiteNavbar />
 
-      <div className="mx-auto max-w-5xl px-8 py-8">
+      <div className="mx-auto max-w-7xl px-6 py-8">
         <AboutPageContent />
 
         <div className="mt-8 flex justify-center border-t border-dashed border-border pt-8">
