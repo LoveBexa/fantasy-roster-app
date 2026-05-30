@@ -1,7 +1,8 @@
 # 06 — League Table Page Spec
 
-**Route**: `app/(dashboard)/league/page.tsx`  
-**Status**: ⏳ Phase 6  
+**Primary route (implemented UI)**: `app/dashboard/page.tsx` → `<LeagueTable />` in `components/dashboard/league-table.tsx`  
+**Standalone route (planned)**: `app/(dashboard)/league/page.tsx`  
+**Status**: 🔄 UI shell built with mock data · ⏳ Supabase aggregation query  
 **Design ref**: `ChatGPT_Image_May_27__2026__09_46_04_PM.png`
 
 ---
@@ -158,30 +159,30 @@ Additional sections:
 
 ## Data Fetching
 
-All fetched as a Supabase server component (no `use client` on the main page):
+**Status**: Not wired yet — dashboard uses mock data. When implemented, fetch in a Server Component on `/dashboard` (or a dedicated league route):
 
 ```typescript
-// app/(dashboard)/league/page.tsx
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+// app/dashboard/page.tsx (future)
+import { createClient } from "@/lib/supabase/server"
 
-export default async function LeaguePage() {
-  const supabase = createServerComponentClient({ cookies })
+export default async function DashboardPage() {
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Main rankings query
   const { data: players } = await supabase
-    .from('roster_players')
+    .from("roster_players")
     .select(`
       id, nickname, photo_url, status,
       stat_entries(total_points, entry_date)
     `)
-    .eq('user_id', user.id)
+    .eq("user_id", user!.id)
 
   // Compute aggregates in JS or use the SQL queries from schema.md
-  // ...
+  // Pass to <LeagueTable players={...} />
 }
 ```
+
+> Use `@supabase/ssr` (`lib/supabase/server.ts`) — not the deprecated `@supabase/auth-helpers-nextjs`.
 
 ---
 

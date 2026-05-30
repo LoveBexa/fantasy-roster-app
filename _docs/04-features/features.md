@@ -2,12 +2,25 @@
 
 ## MVP Features (Phases 1–7)
 
-### ✅ Authentication
-- Email/password sign up and login
-- Google OAuth
-- Apple OAuth
-- Forgot password flow (Supabase handles email)
-- Protected routes (middleware redirects unauthenticated users to `/login`)
+### Authentication
+
+| Capability | Status | Notes |
+|------------|--------|-------|
+| Google OAuth | ✅ Implemented | `components/login-form.tsx` → Supabase → `/auth/callback` → `/dashboard` |
+| Email/password login | 🔲 UI only | Form renders; submit not wired to `signInWithPassword` |
+| Apple OAuth | 🔲 UI only | Button present; not wired |
+| Sign up page | ⏳ Not built | Planned at `app/(auth)/signup` |
+| Forgot password | 🔲 UI only | Link placeholder |
+| OAuth callback | ✅ Implemented | `app/auth/callback/route.ts` |
+| Session refresh | ✅ Implemented | `proxy.ts` refreshes tokens via `getUser()` |
+| Protected routes | ⏳ Not built | Proxy does not yet redirect unauthenticated users away from `/dashboard` |
+
+**Google OAuth setup (external):**
+1. Google Cloud → OAuth client redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`
+2. Supabase → Auth → Providers → Google (Client ID + Secret)
+3. Supabase → URL Configuration → redirect URL: `http://localhost:3000/auth/callback` (+ production URL when deployed)
+
+**Do not** put Google Client Secret in `.env.local` — only Supabase URL + anon key belong in the app.
 
 ### ✅ Roster Management
 - Add a dating prospect (nickname + optional photo + status)

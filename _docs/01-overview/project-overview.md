@@ -31,7 +31,7 @@ Women (primarily 25–40) who are actively dating multiple people and want to:
 
 | Layer | Technology | Why |
 |-------|-----------|-----|
-| Framework | Next.js 14 (App Router) | SSR, routing, server components |
+| Framework | Next.js 16 (App Router) | SSR, routing, server components, Turbopack dev |
 | Language | TypeScript | Type safety at scale |
 | Styling | Tailwind CSS + shadcn/ui | Fast, consistent UI |
 | Database | Supabase (Postgres) | Auth + DB + Storage in one |
@@ -55,16 +55,18 @@ Supabase project `level-up-roster`, Vercel connected to GitHub
 ### ✅ Phase 3 — Database
 All tables created, RLS enabled, seed data loaded (40 scoring behaviours)
 
-### ✅ Phase 4 — Auth
-Login page, Signup page, Google + Apple OAuth, Supabase Auth confirmed working
+### ✅ Phase 4 — Auth *(partially complete)*
+- Login UI at `/` (`app/page.tsx`) with split hero + form layout
+- **Google OAuth** — live via Supabase (`signInWithOAuth` → `/auth/callback` → `/dashboard`)
+- Email/password + Apple buttons — UI only (not wired yet)
+- Supabase clients: `lib/supabase/client.ts`, `lib/supabase/server.ts`
+- Session refresh: `proxy.ts` (Next.js 16; replaces legacy `middleware.ts`)
 
-### 🔄 Phase 5 — Core App Pages *(current)*
-- Dashboard layout with sidebar nav
-- Add Player page
-- Daily Stat Input page
-
-### ⏳ Phase 6 — League Table Page
-Aggregation query, ranked table, MVP card, Red Flag card
+### 🔄 Phase 5–6 — Dashboard & League Table *(current)*
+- **Dashboard page** at `/dashboard` — sidebar, top bar, daily stat input, league table, right rail (UI with mock data)
+- Components in `components/dashboard/`
+- League table aggregation query + live data — still to do
+- Remaining dashboard routes (`/roster`, `/daily-stats`, etc.) — not built yet
 
 ### ⏳ Phase 7 — Deploy
 Push to GitHub, import to Vercel, add env vars, go live
@@ -89,30 +91,28 @@ Set in:
 ```
 level-up-roster/
 ├── app/
-│   ├── (auth)/
-│   │   ├── login/page.tsx
-│   │   └── signup/page.tsx
-│   ├── (dashboard)/
-│   │   ├── layout.tsx          ← sidebar nav lives here
-│   │   ├── league/page.tsx
-│   │   ├── roster/page.tsx
-│   │   ├── daily-stats/page.tsx
-│   │   ├── scoring/page.tsx
-│   │   ├── history/page.tsx
-│   │   └── settings/page.tsx
-│   ├── layout.tsx
-│   └── page.tsx                ← redirects to login/dashboard
+│   ├── auth/
+│   │   └── callback/route.ts   ← OAuth code exchange → redirect /dashboard
+│   ├── dashboard/
+│   │   └── page.tsx            ← main app shell (stat input + league table)
+│   ├── league/
+│   │   └── page.tsx            ← legacy placeholder (not used post-login)
+│   ├── layout.tsx              ← root layout (fonts, suppressHydrationWarning)
+│   └── page.tsx                ← login page (route `/`)
 ├── components/
 │   ├── ui/                     ← shadcn components
-│   ├── league/
-│   ├── roster/
-│   └── shared/
+│   ├── dashboard/              ← AppSidebar, TopBar, LeagueTable, etc.
+│   ├── login-form.tsx
+│   ├── login-hero.tsx
+│   └── site-navbar.tsx
 ├── lib/
 │   ├── supabase/
-│   │   ├── client.ts           ← browser client
-│   │   └── server.ts           ← server component client
+│   │   ├── client.ts           ← browser client (@supabase/ssr)
+│   │   └── server.ts           ← async server client
 │   └── utils.ts
-├── types/
-│   └── database.ts             ← generated Supabase types
+├── proxy.ts                    ← Supabase session refresh (Next.js 16)
+├── next.config.ts
 └── .env.local
 ```
+
+Planned (not yet in repo): `app/(auth)/signup`, separate dashboard sub-routes, `types/database.ts`.

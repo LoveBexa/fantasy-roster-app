@@ -4,13 +4,39 @@ All components live in `components/`. Shadcn/ui primitives are in `components/ui
 
 ---
 
-## Shared Components
+## Dashboard Components *(implemented)*
+
+Built for `/dashboard`. Currently use mock/static data — not yet connected to Supabase.
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| `<AppSidebar />` | `components/dashboard/app-sidebar.tsx` | Left nav, brand header, sticky note |
+| `<TopBar />` | `components/dashboard/top-bar.tsx` | Search, notifications, user area |
+| `<DailyStatInput />` | `components/dashboard/daily-stat-input.tsx` | Player selector + behaviour checkboxes |
+| `<FormChart />` | `components/dashboard/form-chart.tsx` | Mini 7-day points chart (used in stat input) |
+| `<LeagueTable />` | `components/dashboard/league-table.tsx` | Ranked players table |
+| `<RightRail />` | `components/dashboard/right-rail.tsx` | MVP, red flag, awards sidebar cards |
+
+### Auth / login components *(implemented)*
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| `<LoginForm />` | `components/login-form.tsx` | Login form + **Google OAuth** handler |
+| `<LoginHero />` | `components/login-hero.tsx` | Left panel hero on login page |
+| `<SiteNavbar />` | `components/site-navbar.tsx` | Top nav on login page |
+| Icons | `components/doodles.tsx` | `GoogleIcon`, `AppleIcon`, decorative SVGs |
+
+---
+
+## Shared Components *(planned)*
+
+These paths reflect the original spec. Prefer `components/dashboard/` for anything already built.
 
 ### `<Sidebar />`
 `components/shared/Sidebar.tsx`
 
-Nav items (in order):
-1. League Table → `/league` (Trophy icon)
+Nav items (in order) — **dashboard sidebar uses placeholder `href="#"` until routes exist**:
+1. League Table → `/dashboard` (Trophy icon) — *table section on dashboard page today*
 2. My Roster → `/roster` (Heart icon)
 3. Matches → `/matches` (Calendar icon)
 4. Daily Stats → `/daily-stats` (Chart icon)
@@ -100,10 +126,10 @@ interface FormArrowsProps {
 
 ## League Components
 
-### `<LeagueTable />`
-`components/league/LeagueTable.tsx`
+### `<LeagueTable />` — implemented
+`components/dashboard/league-table.tsx`
 
-Full ranked table. Receives pre-computed player data as props.
+Ranked table on `/dashboard`. Mock data today; will receive `RankedPlayer[]` from Supabase server fetch.
 
 ```typescript
 interface LeagueTableProps {
@@ -111,6 +137,9 @@ interface LeagueTableProps {
   timeFilter: TimeFilter
 }
 ```
+
+### Planned extract (optional future refactor)
+`components/league/LeagueTable.tsx` — if league table is split out of the dashboard page later.
 
 ---
 

@@ -1,31 +1,37 @@
 # 06 — Page Specifications
 
-All pages live under `app/(dashboard)/` and share the sidebar layout from `layout.tsx`.
+> **Routing note:** The login page currently lives at **`/`** (`app/page.tsx`), not `app/(auth)/login`. The main authenticated shell is **`/dashboard`** (`app/dashboard/page.tsx`). Separate dashboard sub-routes (`/roster`, `/daily-stats`, etc.) are planned but not built yet.
 
 ---
 
 ## Auth Pages
 
-### Login — `app/(auth)/login/page.tsx`
+### Login — `app/page.tsx` *(implemented — route `/`)*
 
-**Design**: Split screen — left image panel, right form panel  
-**Left panel**: Photo of three women, olive green background, handwritten text "good dates / better vibes / higher stats", circle badge "DATE SMARTER NOT HARDER"  
-**Right panel**:
+**Status**: ✅ UI complete · ✅ Google OAuth wired · 🔲 email/password · 🔲 Apple
+
+**Design**: Split screen — left hero panel, right form panel  
+**Left panel** (`LoginHero`): Olive green background, handwritten taglines, circle badge  
+**Right panel** (`LoginForm`):
 - Heading: "Welcome back, Boss Babe."
 - Subheading (crimson italic): "Log in to check your league."
 - Email + Password fields
-- "Forgot your password?" link
-- Primary CTA: `LOG IN` button (crimson)
+- "Forgot your password?" link (placeholder)
+- Primary CTA: `LOG IN` button (not wired to Supabase yet)
 - Divider: "or"
-- Google OAuth button
-- Apple OAuth button
-- Footer: "Don't have an account? Sign up →"
+- **Google OAuth button** — calls `supabase.auth.signInWithOAuth({ provider: "google", redirectTo: "/auth/callback" })`
+- Apple OAuth button (UI only)
+- Footer: "Don't have an account? Sign up →" (placeholder link)
 
-**Data**: No data fetch — Supabase Auth client-side
+**Data**: No server fetch. Google auth is client-side via `lib/supabase/client.ts`.
+
+**OAuth callback**: `app/auth/callback/route.ts` → redirects to `/dashboard` on success, `/?error=auth` on failure.
 
 ---
 
-### Signup — `app/(auth)/signup/page.tsx`
+### Signup — `app/(auth)/signup/page.tsx` *(planned)*
+
+**Status**: ⏳ Not built
 
 **Design**: Split screen — left brand panel, right form panel  
 **Left panel**: Brand statement "Join the league. Date like you mean it.", feature icons row (Rank People / See the Stats / Protect Your Energy)  
@@ -43,11 +49,35 @@ All pages live under `app/(dashboard)/` and share the sidebar layout from `layou
 
 ## Dashboard Pages
 
-### League Table — `app/(dashboard)/league/page.tsx`
+### Main Dashboard — `app/dashboard/page.tsx` *(implemented — route `/dashboard`)*
+
+**Status**: ✅ Shell UI with mock data · 🔲 live Supabase queries
+
+**Purpose**: Primary post-login destination. Combines daily stat entry and league table on one screen (v0/Cursor design).
+
+**Layout**:
+- `AppSidebar` — left nav (links placeholder `#` for now)
+- `TopBar` — search, notifications, user area
+- Main column: `DailyStatInput` → dashed divider → `LeagueTable`
+- `RightRail` — MVP, red flag, awards cards (mock data)
+
+**Components**: `components/dashboard/*`
+
+**Post-login redirect**: Google OAuth callback sends users here.
+
+---
+
+### League Table — `app/(dashboard)/league/page.tsx` *(planned as standalone route)*
+
+**Status**: UI partially delivered inside `/dashboard` · standalone route not built
 
 **The hero page.** See full spec in [`league-table.md`](./league-table.md).
 
 ---
+
+### Legacy placeholder — `app/league/page.tsx`
+
+**Status**: ⚠️ Deprecated — OAuth no longer redirects here. Safe to delete once confirmed unused.
 
 ### My Roster — `app/(dashboard)/roster/page.tsx`
 

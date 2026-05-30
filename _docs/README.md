@@ -23,15 +23,16 @@ This knowledge base is the single source of truth for the **Level Up Roster** ap
 
 ## 🚀 Current Status
 
-- **Phase 5 — Core App Pages** (in progress, building in Vercel v0)
-- Completed: Phases 0–4 (machine setup, accounts, project scaffold, database, auth)
-- Next: Phase 6 (League Table page) → Phase 7 (Deploy)
+- **Phase 5–6 — Dashboard & League Table UI** (in progress in Cursor)
+- **Completed**: Phases 0–4 (machine setup, accounts, scaffold, database); Google OAuth login wired to Supabase
+- **Built in repo**: Login page (`/`), dashboard shell (`/dashboard`) with daily stat input + league table UI, Supabase auth clients + OAuth callback
+- **Next**: Wire dashboard to live Supabase data → route protection in `proxy.ts` → email/password + Apple auth → deploy (Phase 7)
 
 ---
 
 ## ⚡ Quick Reference
 
-- **Framework**: Next.js 14 (App Router) + TypeScript + Tailwind
+- **Framework**: Next.js 16 (App Router) + TypeScript + Tailwind
 - **Backend**: Supabase (Postgres + Auth + Storage)
 - **UI Library**: shadcn/ui
 - **Deployment**: Vercel

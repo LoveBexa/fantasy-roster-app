@@ -21,6 +21,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
 
 > **`NEXT_PUBLIC_`** prefix means these are exposed to the browser — this is intentional and safe for Supabase's anon key (which is protected by Row Level Security).
 
+Google OAuth credentials (Client ID + Secret) are configured in the **Supabase Dashboard**, not in the Next.js app env.
+
 ### Setting in Vercel
 
 1. Vercel Dashboard → Your Project → Settings → Environment Variables
@@ -32,11 +34,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
 
 ## Supabase Client Setup
 
-### Browser Client (use in client components)
+### Browser Client (client components)
 `lib/supabase/client.ts`
 
 ```typescript
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient } from "@supabase/ssr"
 
 export function createClient() {
   return createBrowserClient(
@@ -46,25 +48,34 @@ export function createClient() {
 }
 ```
 
-### Server Client (use in server components + route handlers)
+Used by `components/login-form.tsx` for `signInWithOAuth({ provider: "google" })`.
+
+### Server Client (server components + route handlers)
 `lib/supabase/server.ts`
 
 ```typescript
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerClient } from "@supabase/ssr"
+import { cookies } from "next/headers"
 
-export function createClient() {
-  const cookieStore = cookies()
+export async function createClient() {
+  const cookieStore = await cookies()
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() { return cookieStore.getAll() },
+        getAll() {
+          return cookieStore.getAll()
+        },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          )
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // Server Components cannot write cookies; proxy handles refresh.
+          }
         },
       },
     }
@@ -72,42 +83,143 @@ export function createClient() {
 }
 ```
 
-### Middleware (protect routes)
-`middleware.ts` (project root)
+> **Next.js 16:** `cookies()` is async — always `await cookies()`.
+
+### Proxy — session refresh (Next.js 16)
+`proxy.ts` (project root)
+
+Next.js 16 renamed `middleware.ts` → `proxy.ts`. The current implementation refreshes the Supabase session on each request. **Route protection redirects are not enabled yet** — add them here when signup/login routes are finalised.
 
 ```typescript
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request })
+export async function proxy(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request })
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { /* same as server.ts */ } }
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
+            supabaseResponse = NextResponse.next({ request })
+            supabaseResponse.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
   )
-  const { data: { user } } = await supabase.auth.getUser()
 
-  // Redirect unauthenticated users to login
-  if (!user && !request.nextUrl.pathname.startsWith('/login') &&
-      !request.nextUrl.pathname.startsWith('/signup')) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+  await supabase.auth.getUser()
 
-  // Redirect logged-in users away from auth pages
-  if (user && (request.nextUrl.pathname === '/login' ||
-      request.nextUrl.pathname === '/signup')) {
-    return NextResponse.redirect(new URL('/league', request.url))
-  }
-
-  return response
+  return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 }
 ```
+
+**Planned route protection** (not yet in repo):
+
+```typescript
+// After getUser():
+// if (!user && !isPublicPath) redirect to `/`
+// if (user && pathname === `/`) redirect to `/dashboard`
+```
+
+---
+
+## OAuth Callback Route
+
+`app/auth/callback/route.ts` — exchanges the Supabase auth `code` for a session and sets cookies on the response.
+
+```typescript
+import { createServerClient } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
+
+export async function GET(request: NextRequest) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get("code")
+  const next = searchParams.get("next") ?? "/dashboard"
+
+  if (code) {
+    const redirectUrl = `${origin}${next}`
+    const supabaseResponse = NextResponse.redirect(redirectUrl)
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              request.cookies.set(name, value)
+              supabaseResponse.cookies.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
+
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error) {
+      return supabaseResponse
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/?error=auth`)
+}
+```
+
+**Post-login destination:** `/dashboard` (main app shell with league table UI).
+
+---
+
+## Google OAuth — External Configuration
+
+### Google Cloud Console
+
+OAuth 2.0 client → **Authorized redirect URIs**:
+
+```
+https://<your-project-ref>.supabase.co/auth/v1/callback
+```
+
+Example: `https://cftxmauuchicnmurwxmk.supabase.co/auth/v1/callback`
+
+### Supabase Dashboard
+
+**Authentication → Providers → Google**
+- Enable provider
+- Paste Google Client ID and Client Secret
+
+**Authentication → URL Configuration**
+- **Site URL** (local): `http://localhost:3000`
+- **Site URL** (prod): `https://your-app.vercel.app`
+- **Redirect URLs**:
+  - `http://localhost:3000/auth/callback`
+  - `https://your-app.vercel.app/auth/callback`
+
+### Login flow (end-to-end)
+
+1. User clicks **Continue with Google** on `/`
+2. `signInWithOAuth` redirects to Google via Supabase
+3. Google → Supabase → app at `/auth/callback?code=...`
+4. Callback exchanges code, sets session cookies
+5. User lands on `/dashboard`
 
 ---
 
@@ -148,33 +260,13 @@ Every PR/branch push creates a preview URL automatically — use these for testi
 
 ---
 
-## Supabase Auth Redirect URLs
+## App Configuration Notes
 
-After enabling Google/Apple OAuth in Supabase, add these redirect URLs:
-
-In Supabase → Authentication → URL Configuration:
-- **Site URL**: `https://your-app.vercel.app`
-- **Redirect URLs**: 
-  - `https://your-app.vercel.app/auth/callback`
-  - `http://localhost:3000/auth/callback` (for local dev)
-
-Create `app/auth/callback/route.ts`:
-
-```typescript
-import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
-
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  
-  if (code) {
-    const supabase = createClient()
-    await supabase.auth.exchangeCodeForSession(code)
-  }
-  return NextResponse.redirect(`${origin}/league`)
-}
-```
+| File | Purpose |
+|------|---------|
+| `next.config.ts` | Next.js config (requires Next.js 16+ — `.ts` not supported on Next 9) |
+| `package.json` | Pin `"next": "16.2.6"` — do not downgrade to Next 9 |
+| `app/layout.tsx` | `suppressHydrationWarning` on `<html>` / `<body>` avoids console noise from browser extensions (e.g. Grammarly) |
 
 ---
 
