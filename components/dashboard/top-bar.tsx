@@ -1,7 +1,15 @@
 "use client"
 
-import { Search, Bell, ChevronDown, LogOut } from "lucide-react"
+import Link from "next/link"
+import { Search, ChevronDown, LogOut, User } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useLogout } from "@/lib/auth/use-logout"
 import type { UserDisplay } from "@/lib/auth/user-display"
 
@@ -33,18 +41,12 @@ export function TopBar({ user }: TopBarProps) {
         />
       </div>
 
-      <div className="flex items-center gap-5">
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative text-foreground/70 transition-colors hover:text-foreground"
-        >
-          <Bell className="size-5" />
-          <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary" aria-hidden />
-        </button>
-
-        <div className="flex items-center gap-2">
-          <button type="button" className="flex items-center gap-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted"
+          >
             <Avatar className="size-9">
               {user?.avatarUrl ? (
                 <AvatarImage src={user.avatarUrl} alt={`${user.name}'s profile`} />
@@ -56,18 +58,26 @@ export function TopBar({ user }: TopBarProps) {
             <span className="text-sm font-semibold text-foreground">{greeting}</span>
             <ChevronDown className="size-4 text-muted-foreground" />
           </button>
+        </DropdownMenuTrigger>
 
-          <button
-            type="button"
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuItem asChild>
+            <Link href="/account" className="cursor-pointer">
+              <User />
+              Account
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            className="cursor-pointer"
             onClick={() => logout()}
-            aria-label="Log out"
-            title="Log out"
-            className="rounded-lg p-2 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
           >
-            <LogOut className="size-5" />
-          </button>
-        </div>
-      </div>
+            <LogOut />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   )
 }
