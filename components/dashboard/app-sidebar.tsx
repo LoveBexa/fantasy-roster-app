@@ -1,29 +1,36 @@
+"use client"
+
 import {
   Trophy,
   Heart,
-  Swords,
-  ClipboardList,
-  Sparkles,
-  History,
-  Award,
-  LineChart,
   Settings,
+  LogOut,
+  type LucideIcon,
 } from "lucide-react"
 import { HeartDoodle } from "@/components/doodles"
+import { useLogout } from "@/lib/auth/use-logout"
 
-const navItems = [
-  { label: "League Table", icon: Trophy, active: false },
-  { label: "My Roster", icon: Heart, active: false },
-  { label: "Matches", icon: Swords, active: false },
-  { label: "Daily Stats", icon: ClipboardList, active: true },
-  { label: "Scoring System", icon: Sparkles, active: false },
-  { label: "History", icon: History, active: false },
-  { label: "Awards", icon: Award, active: false },
-  { label: "Insights", icon: LineChart, active: false },
-  { label: "Settings", icon: Settings, active: false },
+type NavItem = {
+  label: string
+  icon: LucideIcon
+  active?: boolean
+  href?: string
+}
+
+const navItems: NavItem[] = [
+  { label: "League Table", icon: Trophy, active: false, href: "/dashboard" },
+  { label: "My Roster", icon: Heart, active: false, href: "#" },
+  { label: "Settings", icon: Settings, active: false, href: "#" },
 ]
 
+const logoutItem = {
+  label: "Log out",
+  icon: LogOut,
+} as const
+
 export function AppSidebar() {
+  const logout = useLogout()
+
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-card/60 px-4 py-6">
       <div className="px-2">
@@ -39,7 +46,7 @@ export function AppSidebar() {
         {navItems.map((item) => (
           <a
             key={item.label}
-            href="#"
+            href={item.href ?? "#"}
             aria-current={item.active ? "page" : undefined}
             className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               item.active
@@ -51,6 +58,15 @@ export function AppSidebar() {
             {item.label}
           </a>
         ))}
+
+        <button
+          type="button"
+          onClick={() => logout()}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted"
+        >
+          <logoutItem.icon className="size-5 shrink-0" />
+          {logoutItem.label}
+        </button>
       </nav>
 
       <div className="mt-auto space-y-4 pt-6">

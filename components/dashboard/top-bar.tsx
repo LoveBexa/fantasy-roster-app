@@ -1,7 +1,26 @@
-import Image from "next/image"
-import { Search, Bell, ChevronDown } from "lucide-react"
+"use client"
 
-export function TopBar() {
+import { Search, Bell, ChevronDown, LogOut } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useLogout } from "@/lib/auth/use-logout"
+import type { UserDisplay } from "@/lib/auth/user-display"
+
+type TopBarProps = {
+  user: UserDisplay | null
+}
+
+function getInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("")
+}
+
+export function TopBar({ user }: TopBarProps) {
+  const logout = useLogout()
+  const greeting = user ? `Hi, ${user.firstName}` : "Hi there"
+
   return (
     <header className="flex items-center justify-between gap-4 border-b border-border bg-card/40 px-8 py-4">
       <div className="relative w-full max-w-sm">
@@ -24,17 +43,30 @@ export function TopBar() {
           <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary" aria-hidden />
         </button>
 
-        <button type="button" className="flex items-center gap-2">
-          <Image
-            src="/images/jackie-avatar.png"
-            alt="Jackie's profile"
-            width={36}
-            height={36}
-            className="size-9 rounded-full object-cover"
-          />
-          <span className="text-sm font-semibold text-foreground">Hi, Jackie</span>
-          <ChevronDown className="size-4 text-muted-foreground" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button type="button" className="flex items-center gap-2">
+            <Avatar className="size-9">
+              {user?.avatarUrl ? (
+                <AvatarImage src={user.avatarUrl} alt={`${user.name}'s profile`} />
+              ) : null}
+              <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                {user ? getInitials(user.name) : "?"}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-semibold text-foreground">{greeting}</span>
+            <ChevronDown className="size-4 text-muted-foreground" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => logout()}
+            aria-label="Log out"
+            title="Log out"
+            className="rounded-lg p-2 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <LogOut className="size-5" />
+          </button>
+        </div>
       </div>
     </header>
   )
