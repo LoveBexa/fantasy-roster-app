@@ -20,7 +20,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "League Table", icon: Trophy, href: "/dashboard" },
   { label: "My Roster", icon: Heart, href: "/roster" },
-  { label: "Settings", icon: Settings, href: "#" },
+  { label: "Account", icon: Settings, href: "#" },
 ]
 
 export type SidebarActivePage = NavItem["label"]
