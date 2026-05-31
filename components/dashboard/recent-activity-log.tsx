@@ -81,7 +81,7 @@ export function RecentActivityLog({
           >
             RECENT ACTIVITY LOG
           </h2>
-          <p className="mt-1 font-script text-xl text-primary/90">
+          <p className="mt-1 font-script text-xl text-muted-foreground">
             The receipts. The evidence. The pattern.
           </p>
         </div>

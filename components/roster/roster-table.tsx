@@ -327,14 +327,14 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
           >
             <option value="lastUpdated">Last Updated</option>
             <option value="added">Date Added</option>
-            <option value="nickname">Nickname</option>
+            <option value="nickname">Name</option>
           </select>
         </div>
       </div>
 
       <div className="rounded-xl border border-border bg-card/40">
         <div className="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_auto] gap-4 border-b border-border px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          <span>Nickname</span>
+          <span>Name</span>
           <span>Status</span>
           <span>Relationship Status</span>
           <span>Added</span>
@@ -392,9 +392,6 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {player.description}
-                    </p>
-                    <p className="mt-0.5 font-mono text-[10px] text-muted-foreground/70">
-                      ID: {player.id}
                     </p>
                   </div>
                 </div>

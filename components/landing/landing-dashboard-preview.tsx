@@ -127,7 +127,7 @@ export function LandingDashboardPreview() {
               />
             </div>
 
-            <div className="w-full rounded-2xl border border-border bg-accent/30 p-4 shadow-lg lg:absolute lg:-left-6 lg:bottom-16 lg:z-10 lg:w-52">
+            <div className="w-full rounded-2xl border border-border bg-accent/50 p-4 shadow-lg lg:absolute lg:-left-7 lg:bottom-20 lg:z-10 lg:w-52">
               <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
                 {consistencyCard.title}
               </p>

@@ -7,7 +7,7 @@ export const landingHero = {
   primaryCta: "JOIN THE LEAGUE",
   secondaryCta: "HOW IT WORKS",
   annotation:
-    "Built for the people with 27 tabs open, three situationships, and a spreadsheet somewhere.",
+    "Built for the people with 14 unread messages, 3 situationships, and a spreadsheet somewhere.",
   heroImage: "/images/women-looking-phone.png",
 } as const
 
@@ -37,8 +37,8 @@ export const landingDashboard = {
   players: [
     {
       rank: 1,
-      name: "Sunshine",
-      emoji: "😎",
+      name: "Princess",
+      emoji: "👸",
       status: "Active",
       points: 245,
       trend: "up" as const,
@@ -46,8 +46,8 @@ export const landingDashboard = {
     },
     {
       rank: 2,
-      name: "Heatwave",
-      emoji: "🔥",
+      name: "Hammer Toe Tom",
+      emoji: "🦶",
       status: "Active",
       points: 228,
       trend: "up" as const,
@@ -55,8 +55,8 @@ export const landingDashboard = {
     },
     {
       rank: 3,
-      name: "Echo",
-      emoji: "🪓",
+      name: "Gym Bro #2",
+      emoji: "🏋️",
       status: "Reserve",
       points: 196,
       trend: "down" as const,
@@ -64,8 +64,8 @@ export const landingDashboard = {
     },
     {
       rank: 4,
-      name: "Casper",
-      emoji: "👻",
+      name: "Star Tattoo",
+      emoji: "🌟",
       status: "Ghosted",
       points: 42,
       trend: "down" as const,
@@ -74,7 +74,7 @@ export const landingDashboard = {
   ],
   mvpCard: {
     title: "MVP OF THE MONTH",
-    player: "Sunshine",
+    player: "Princess",
     points: 245,
     note: "Planned a surprise date · Great communication",
   },
@@ -97,10 +97,10 @@ export const landingHowItWorks = {
       number: 1,
       title: "Add Your Players",
       players: [
-        { emoji: "😎", name: "Sunshine" },
-        { emoji: "🪓", name: "Echo" },
-        { emoji: "🔥", name: "Heatwave" },
-        { emoji: "👻", name: "Casper" },
+        { emoji: "👸", name: "Princess" },
+        { emoji: "🌟", name: "Star Tattoo" },
+        { emoji: "🦶", name: "Hammer Toe Tom" },
+        { emoji: "🏋️", name: "Gym Bro #2" },
       ],
     },
     {
@@ -118,9 +118,9 @@ export const landingHowItWorks = {
       number: 3,
       title: "Watch The Standings Change",
       standings: [
-        { rank: 1, emoji: "😎", name: "Sunshine", points: 245, isMvp: true },
-        { rank: 2, emoji: "🔥", name: "Heatwave", points: 228, isMvp: false },
-        { rank: 3, emoji: "🪓", name: "Echo", points: 196, isMvp: false },
+        { rank: 1, emoji: "👸", name: "Princess", points: 245, isMvp: true },
+        { rank: 2, emoji: "🦶", name: "Hammer Toe Tom", points: 228, isMvp: false },
+        { rank: 3, emoji: "🏋️", name: "Gym Bro #2", points: 196, isMvp: false },
       ],
     },
   ],
