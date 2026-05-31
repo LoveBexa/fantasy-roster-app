@@ -1,7 +1,7 @@
 import type { User } from "@supabase/supabase-js"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { getUserDisplay } from "@/lib/auth/user-display"
-import { getUserProfile } from "@/lib/auth/user-profile"
+import { buildUserProfile } from "@/lib/auth/user-profile"
 import {
   ensureUserProfileRow,
   type UserProfileRow,
@@ -20,7 +20,7 @@ export async function getSessionUserContext(supabase: SupabaseClient) {
     user,
     profileRow,
     display: getUserDisplay(user, profileRow),
-    profile: getUserProfile(user, profileRow),
+    profile: buildUserProfile(user, profileRow),
   }
 }
 
