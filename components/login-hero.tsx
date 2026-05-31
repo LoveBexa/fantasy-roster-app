@@ -4,7 +4,7 @@ import { HeroStickyNote } from "@/components/hero-sticky-note"
 
 export function LoginHero() {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-primary">
+    <div className="relative hidden overflow-hidden rounded-3xl bg-primary lg:block">
       <Image
         src="/images/three-women.png"
         alt="Three confident women seated together in tailored blazers"

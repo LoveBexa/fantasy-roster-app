@@ -13,9 +13,9 @@ export default function LoginPage() {
     <main className={marketingPageMainClass}>
       <SiteNavbar />
 
-      <section className="mx-auto grid max-w-7xl items-stretch gap-8 px-6 py-8 lg:grid-cols-2 lg:gap-12">
+      <section className="mx-auto grid max-w-7xl items-stretch gap-8 px-6 py-6 lg:grid-cols-2 lg:gap-12 lg:py-8">
         <LoginHero />
-        <div className="flex items-center">
+        <div className="flex items-center justify-center lg:justify-start">
           <LoginForm />
         </div>
       </section>
