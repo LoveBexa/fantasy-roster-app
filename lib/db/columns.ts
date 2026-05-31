@@ -68,6 +68,7 @@ export const USER_PROFILES = {
   userId: "user_id",
   nickname: "nickname",
   avatarEmoji: "avatar_emoji",
+  onboardingCompletedAt: "onboarding_completed_at",
   createdAt: "created_at",
   updatedAt: "updated_at",
 } as const

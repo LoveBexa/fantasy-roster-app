@@ -98,8 +98,9 @@ Values must match **Project Settings → API** in the project where you ran migr
 
 Supabase → **Authentication → URL Configuration**:
 
-- **Site URL:** `http://localhost:3000`
-- **Redirect URLs:** `http://localhost:3000/auth/callback`
+- **Site URL (production):** `https://therosterleague.com`
+- **Redirect URLs (production):** `https://therosterleague.com/auth/callback`
+- **Local dev only:** `http://localhost:3000` and `http://localhost:3000/auth/callback`
 
 ---
 

@@ -77,9 +77,11 @@ Create `.env.local` in the project root *(never commit this file)*:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+# Production (Vercel) — include https://
+NEXT_PUBLIC_SITE_URL=https://therosterleague.com
 ```
 
-For Google sign-in, configure OAuth in Supabase and Google Cloud — see [`_docs/08-deployment/deployment.md`](./_docs/08-deployment/deployment.md).
+Copy from [`.env.example`](./.env.example). For Google sign-in, set Supabase **Site URL** to `https://therosterleague.com` and allow `https://therosterleague.com/auth/callback` — see [`_docs/08-deployment/deployment.md`](./_docs/08-deployment/deployment.md).
 
 ### Run locally
 
@@ -87,7 +89,7 @@ For Google sign-in, configure OAuth in Supabase and Google Cloud — see [`_docs
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for login. After Google auth you’ll land on `/dashboard`.
+Open [http://localhost:3000](http://localhost:3000) for local dev. Production: [https://therosterleague.com](https://therosterleague.com). After Google auth you’ll land on `/dashboard`.
 
 ---
 

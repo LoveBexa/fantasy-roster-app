@@ -234,19 +234,23 @@ Example: `https://cftxmauuchicnmurwxmk.supabase.co/auth/v1/callback`
 - Paste Google Client ID and Client Secret
 
 **Authentication → URL Configuration**
-- **Site URL** (production): your Vercel URL, e.g. `https://your-app.vercel.app` — **not** `http://localhost:3000` (if Site URL is localhost, Google OAuth on Vercel will redirect users to localhost)
-- **Site URL** (local): `http://localhost:3000`
-- **Site URL** (prod): `https://your-app.vercel.app`
+
+Production app: **[https://therosterleague.com](https://therosterleague.com)**
+
+- **Site URL** (production): `https://therosterleague.com` — **not** `http://localhost:3000` (if Site URL is localhost, Google OAuth on the live site will send users to localhost)
 - **Redirect URLs** (add all that apply):
-  - `http://localhost:3000/auth/callback`
-  - `https://your-app.vercel.app/auth/callback`
+  - `https://therosterleague.com/auth/callback` ← **required for production**
+  - `https://<your-project>.vercel.app/auth/callback` (optional, if you test on a `*.vercel.app` URL)
+  - `http://localhost:3000/auth/callback` (local dev only)
+
+**Vercel env:** `NEXT_PUBLIC_SITE_URL` = `https://therosterleague.com` (include `https://` — not `therosterleague.com` alone)
 
 Email sign-up and password reset also use `/auth/callback` — ensure the Email provider is enabled under **Authentication → Providers**.
 
 ### Login flow (end-to-end)
 
 1. User clicks **Continue with Google** or submits email/password on `/login`
-2. Google: `signInWithOAuth` → Google via Supabase → `/auth/callback?code=...`
+2. Google: `signInWithOAuth` → Google via Supabase → `https://therosterleague.com/auth/callback?code=...`
 3. Email/password: `signInWithPassword` → session set in browser
 4. Email sign-up confirm / password reset: email link → `/auth/callback?next=/dashboard` or `/reset-password`
 5. Callback exchanges code, sets session cookies
@@ -272,7 +276,7 @@ git push -u origin main
 # → vercel.com → Add New Project → Import from GitHub
 # → Select level-up-roster repo
 # → Framework: Next.js (auto-detected)
-# → Add env vars (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+# → Add env vars (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_SITE_URL=https://therosterleague.com)
 # → Deploy
 ```
 

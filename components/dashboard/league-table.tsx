@@ -157,7 +157,7 @@ export function LeagueTable() {
             >
               Add players
             </Link>{" "}
-            and log daily stats to populate the league table.
+            and then log daily stats to populate the league table.
           </p>
         ) : (
           rows.map((player) => (

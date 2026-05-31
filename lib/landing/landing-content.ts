@@ -7,7 +7,7 @@ export const landingHero = {
   primaryCta: "JOIN THE LEAGUE",
   secondaryCta: "HOW IT WORKS",
   annotation:
-    "Built for the people with 420 unread messages, 3 situationships, and a Google Sheet called Dating Log",
+    "Built for the people with 420 unread messages, 3+ situationships, and a Google Sheet called Dating Log",
   heroImage: "/images/women-looking-phone.png",
 } as const
 

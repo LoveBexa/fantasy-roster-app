@@ -34,9 +34,9 @@ export function TopBar({ user }: TopBarProps) {
     <header className="sticky top-0 z-40 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-4 py-3 md:gap-4 md:px-8 md:py-4 lg:static lg:bg-card/40">
       <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-4">
         <RosterLogoLink
-          className="min-w-0 lg:hidden"
-          titleClassName="truncate text-2xl leading-none"
-          taglineClassName="mt-0.5 truncate text-[0.65rem] tracking-[0.28em] text-primary/55"
+          className="min-w-0 max-w-[52vw] lg:hidden"
+          titleClassName="truncate text-xl leading-none sm:text-2xl"
+          taglineClassName="mt-0.5 hidden truncate text-[0.65rem] tracking-[0.28em] text-primary/55 min-[400px]:block"
         />
         <div className="relative hidden w-full max-w-sm lg:block">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -53,9 +53,9 @@ export function TopBar({ user }: TopBarProps) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="flex max-w-[45vw] items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-muted sm:max-w-none sm:px-2 sm:py-1.5"
+            className="flex max-w-[42vw] shrink-0 items-center gap-1.5 rounded-lg px-1 py-1 transition-colors hover:bg-muted min-[400px]:max-w-none min-[400px]:gap-2 min-[400px]:px-2 sm:py-1.5"
           >
-            <Avatar className="size-10 shrink-0 sm:size-9">
+            <Avatar className="size-9 shrink-0">
               {!user?.avatarEmoji && user?.avatarUrl ? (
                 <AvatarImage src={user.avatarUrl} alt={`${user.name}'s profile`} />
               ) : null}
@@ -69,7 +69,7 @@ export function TopBar({ user }: TopBarProps) {
                 {user?.avatarEmoji ?? (user ? getInitials(user.name) : "?")}
               </AvatarFallback>
             </Avatar>
-            <span className="truncate text-sm font-semibold text-foreground sm:text-sm">
+            <span className="hidden truncate text-sm font-semibold text-foreground min-[400px]:inline">
               {greeting}
             </span>
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" />

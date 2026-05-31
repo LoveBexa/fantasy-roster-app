@@ -1,18 +1,26 @@
+import {
+  normalizePublicSiteUrl,
+  normalizeSiteUrl,
+  PRODUCTION_SITE_URL,
+} from "@/lib/site-url"
+
 export const AUTH_CALLBACK_PATH = "/auth/callback"
 export const DEFAULT_POST_AUTH_PATH = "/dashboard"
 
+export { PRODUCTION_SITE_URL }
+
 /**
  * App origin for redirects.
- * In the browser, always use the current host (avoids a wrong NEXT_PUBLIC_SITE_URL sending OAuth to localhost).
- * On the server, use NEXT_PUBLIC_SITE_URL or the request host.
+ * Browser: current host (e.g. https://therosterleague.com).
+ * Server: NEXT_PUBLIC_SITE_URL (normalized) or request fallback.
  */
 export function getSiteOrigin(fallbackOrigin?: string) {
   if (typeof window !== "undefined") {
     return window.location.origin
   }
-  const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "")
+  const configured = normalizePublicSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)
   if (configured) return configured
-  if (fallbackOrigin) return fallbackOrigin.replace(/\/$/, "")
+  if (fallbackOrigin) return normalizeSiteUrl(fallbackOrigin)
   return ""
 }
 
@@ -20,6 +28,11 @@ export function getSiteOrigin(fallbackOrigin?: string) {
 export function getOAuthCallbackUrl(origin?: string) {
   const base = getSiteOrigin(origin)
   return `${base}${AUTH_CALLBACK_PATH}`
+}
+
+/** Production OAuth callback for Supabase redirect URL allowlist docs. */
+export function getProductionOAuthCallbackUrl() {
+  return `${PRODUCTION_SITE_URL}${AUTH_CALLBACK_PATH}`
 }
 
 /** Email / password-reset links may include a `next` path on the callback. */

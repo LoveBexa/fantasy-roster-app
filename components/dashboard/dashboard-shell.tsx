@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { AppSidebar } from "./app-sidebar"
 import { AppBottomNav } from "./app-bottom-nav"
+import { DashboardOnboarding } from "./dashboard-onboarding"
 import { TopBar } from "./top-bar"
 import type { SidebarActivePage } from "./app-nav-items"
 import type { UserDisplay } from "@/lib/auth/user-display"
@@ -25,6 +26,7 @@ export function DashboardShell({ activePage, user, children }: DashboardShellPro
       </div>
 
       <AppBottomNav />
+      <DashboardOnboarding />
     </div>
   )
 }

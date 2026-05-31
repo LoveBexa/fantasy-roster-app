@@ -51,7 +51,7 @@ function StickyNoteIllustration() {
 
         <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 px-1 font-script text-[1.05rem] leading-snug text-primary">
           <p>Problem ✓</p>
-          <p>Idea  ✓</p>
+          <p>Solution  ✓</p>
           <p>AI tools ✓</p>
           <p>3 days ✓</p>
         </div>
@@ -85,7 +85,7 @@ const featureItems = [
   },
   {
     title: "MODERN TECH",
-    subtitle: "AI tools to move faster.",
+    subtitle: "AI tools to ship faster.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-8">
         <rect x="3" y="5" width="18" height="12" rx="1.5" />
@@ -149,7 +149,7 @@ export function EditorialBlock({ className }: { className?: string }) {
             <div className="space-y-4 text-sm leading-relaxed text-foreground/85 sm:text-[0.95rem]">
               <p>The Roster wasn&apos;t built by a startup team.</p>
               <p>
-                It was built by one person with a ridiculous idea, a real problem, using AI modern tools and a lot of late nights.
+                It was built by one person seeing a real problem, and solving it using AI tools to build a ridiculous solution on 3 days of no sleep.
               </p>
             </div>
 

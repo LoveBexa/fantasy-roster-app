@@ -7,6 +7,7 @@ export type UserProfileRow = {
   user_id: string
   nickname: string | null
   avatar_emoji: string | null
+  onboarding_completed_at: string | null
 }
 
 const MISSING_TABLE_MESSAGE =
@@ -34,7 +35,9 @@ export async function fetchUserProfileRow(
 ): Promise<UserProfileRow | null> {
   const { data, error } = await supabase
     .from(TABLES.userProfiles)
-    .select(`${USER_PROFILES.userId}, ${USER_PROFILES.nickname}, ${USER_PROFILES.avatarEmoji}`)
+    .select(
+      `${USER_PROFILES.userId}, ${USER_PROFILES.nickname}, ${USER_PROFILES.avatarEmoji}, ${USER_PROFILES.onboardingCompletedAt}`
+    )
     .eq(USER_PROFILES.userId, userId)
     .maybeSingle()
 
@@ -49,6 +52,7 @@ export async function fetchUserProfileRow(
     user_id: data.user_id,
     nickname: data.nickname,
     avatar_emoji: data.avatar_emoji,
+    onboarding_completed_at: data.onboarding_completed_at ?? null,
   }
 }
 
@@ -62,7 +66,9 @@ export async function ensureUserProfileRow(
   const { data, error } = await supabase
     .from(TABLES.userProfiles)
     .upsert({ [USER_PROFILES.userId]: userId }, { onConflict: USER_PROFILES.userId })
-    .select(`${USER_PROFILES.userId}, ${USER_PROFILES.nickname}, ${USER_PROFILES.avatarEmoji}`)
+    .select(
+      `${USER_PROFILES.userId}, ${USER_PROFILES.nickname}, ${USER_PROFILES.avatarEmoji}, ${USER_PROFILES.onboardingCompletedAt}`
+    )
     .single()
 
   if (error) {
@@ -76,7 +82,40 @@ export async function ensureUserProfileRow(
     user_id: data.user_id,
     nickname: data.nickname,
     avatar_emoji: data.avatar_emoji,
+    onboarding_completed_at: data.onboarding_completed_at ?? null,
   }
+}
+
+export async function completeDashboardOnboarding(supabase: SupabaseClient) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: new Error("Not signed in.") }
+  }
+
+  const completedAt = new Date().toISOString()
+
+  const { error } = await supabase
+    .from(TABLES.userProfiles)
+    .upsert(
+      {
+        [USER_PROFILES.userId]: user.id,
+        [USER_PROFILES.onboardingCompletedAt]: completedAt,
+      },
+      { onConflict: USER_PROFILES.userId }
+    )
+
+  if (error && isMissingProfileTableError(error)) {
+    return { error: new Error(MISSING_TABLE_MESSAGE) }
+  }
+
+  if (error) {
+    return { error: new Error(error.message) }
+  }
+
+  return { completedAt, error: null }
 }
 
 export async function saveUserProfile(

@@ -230,21 +230,24 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
   }
 
   return (
-    <section aria-labelledby="roster-heading" className="space-y-6">
+    <section
+      aria-labelledby="roster-heading"
+      className="min-w-0 space-y-6 overflow-x-hidden"
+    >
       <PageHeader
         id="roster-heading"
         title="MY ROSTERS"
         subtitle="You're the manager. Build your roster. Track the potential."
-        icon={<HeartDoodle className="size-8 text-primary" />}
+        icon={<HeartDoodle className="size-6 shrink-0 text-primary sm:size-8" />}
         action={
-          <div className="flex flex-col items-end gap-2">
-            <p className="text-xs font-medium text-muted-foreground">
+          <div className="flex w-full flex-col gap-2 sm:items-end">
+            <p className="text-xs font-medium text-muted-foreground sm:text-right">
               {formatRosterLimitLabel(playerCount)}
             </p>
             <Button
               onClick={handleToggleAddForm}
               disabled={isSaving || (!showAddForm && atRosterLimit)}
-              className="rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="h-11 w-full rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
             >
               {showAddForm ? "✕ CLOSE" : "+ ADD PLAYER"}
             </Button>
@@ -298,25 +301,32 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
         />
       )}
 
-      <div className="flex flex-col gap-3 rounded-xl border border-border bg-card/60 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
-        <div className="flex min-w-0 flex-col gap-2 md:flex-row md:items-center md:gap-2">
+      <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-border bg-card/60 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
+        <div className="flex min-w-0 w-full flex-col gap-2 md:flex-row md:items-center md:gap-2">
           <span className="shrink-0 text-xs font-medium text-muted-foreground md:text-sm">
             FILTER BY STATUS
           </span>
-          <div className="flex flex-wrap gap-1 md:gap-2">
+          <div className="grid w-full min-w-0 grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:gap-2">
             {(["All", ...PLAYER_STATUSES] as const).map((status) => (
               <button
                 key={status}
                 type="button"
                 onClick={() => setFilter(status)}
                 className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-tight transition-colors sm:text-[11px] md:px-4 md:py-1.5 md:text-sm",
+                  "min-w-0 rounded-full border px-1.5 py-1 text-center text-[10px] font-medium leading-tight transition-colors sm:shrink-0 sm:px-2 sm:py-0.5 sm:text-[11px] md:px-4 md:py-1.5 md:text-sm",
                   filter === status
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-card text-foreground hover:bg-muted"
                 )}
               >
-                {status}
+                <span className="sm:hidden">
+                  {status === "Free Agent"
+                    ? "Free Ag."
+                    : status === "Removed"
+                      ? "Removed"
+                      : status}
+                </span>
+                <span className="hidden sm:inline">{status}</span>
               </button>
             ))}
           </div>
@@ -335,7 +345,7 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card/40">
+      <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-card/40">
         <div className="hidden grid-cols-[2fr_1fr_2fr_1fr_1fr_auto] gap-4 border-b border-border px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:grid">
           <span>Name</span>
           <span>Status</span>
@@ -371,8 +381,8 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
 
             return (
               <div key={player.id}>
-                <article className="border-b border-border/50 px-4 py-3 last:border-0 md:hidden">
-                  <div className="flex items-start gap-3">
+                <article className="border-b border-border/50 px-3 py-3 last:border-0 sm:px-4 md:hidden">
+                  <div className="flex min-w-0 items-start gap-3">
                     {player.photoUrl ? (
                       <Image
                         src={player.photoUrl}
@@ -385,44 +395,20 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                       <span className="shrink-0 text-2xl leading-none">{player.emoji}</span>
                     )}
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="flex min-w-0 items-center gap-1.5">
-                            <span className="truncate font-semibold text-foreground">
-                              {player.nickname}
-                            </span>
-                            {showStar ? (
-                              <StarDoodle className="size-3.5 shrink-0 text-amber-500" />
-                            ) : null}
-                          </div>
-                          {player.description ? (
-                            <p className="line-clamp-2 text-xs text-muted-foreground">
-                              {player.description}
-                            </p>
+                      <div className="min-w-0">
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          <span className="truncate font-semibold text-foreground">
+                            {player.nickname}
+                          </span>
+                          {showStar ? (
+                            <StarDoodle className="size-3.5 shrink-0 text-amber-500" />
                           ) : null}
                         </div>
-                        <div className="flex shrink-0 gap-0.5">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-8"
-                            disabled={isSaving}
-                            onClick={() => setEditingPlayer(player)}
-                            aria-label={`Edit ${player.nickname}`}
-                          >
-                            <Pencil className="size-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-8"
-                            disabled={isSaving}
-                            onClick={() => setDeletingPlayer(player)}
-                            aria-label={`Delete ${player.nickname}`}
-                          >
-                            <Trash2 className="size-3.5" />
-                          </Button>
-                        </div>
+                        {player.description ? (
+                          <p className="line-clamp-2 text-xs text-muted-foreground">
+                            {player.description}
+                          </p>
+                        ) : null}
                       </div>
 
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -462,7 +448,7 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                         )}
                       </div>
 
-                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                      <div className="mt-2 flex flex-col gap-0.5 text-[11px] text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-3">
                         <span>
                           Added{" "}
                           <span className="text-foreground">{player.addedDate}</span>
@@ -473,6 +459,29 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                         </span>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="mt-2 flex justify-end gap-1 border-t border-border/40 pt-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-9"
+                      disabled={isSaving}
+                      onClick={() => setEditingPlayer(player)}
+                      aria-label={`Edit ${player.nickname}`}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-9"
+                      disabled={isSaving}
+                      onClick={() => setDeletingPlayer(player)}
+                      aria-label={`Delete ${player.nickname}`}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
                   </div>
                 </article>
 

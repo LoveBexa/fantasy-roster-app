@@ -174,6 +174,10 @@ export function DailyStatInput() {
 
   const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
 
+  const whatHappenedHeading = selectedPlayer
+    ? `What happened today with ${selectedPlayer.nickname}?`
+    : "What happened today?"
+
   const draftPointsImpact = useMemo(() => {
     return selectedBehaviorIds.reduce((sum, id) => {
       const behavior = behaviors.find((b) => b.id === id)
@@ -410,12 +414,12 @@ export function DailyStatInput() {
         ) : null}
 
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">
-            What Happened Today?
+          <h3 className="text-sm font-bold text-foreground">
+            {whatHappenedHeading}
           </h3>
           <p className="mt-1 text-sm font-semibold text-primary">Select all that apply</p>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7">
             {behaviors.map((behavior) => {
               const isSelected = selectedBehaviorIds.includes(behavior.id)
               const isNegative = behavior.points < 0
@@ -428,25 +432,27 @@ export function DailyStatInput() {
                       type="button"
                       onClick={() => toggleBehavior(behavior.id)}
                       aria-pressed={isSelected}
-                      className={`relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all ${
+                      className={`relative flex min-h-[4.5rem] flex-col items-center justify-center gap-0.5 rounded-lg border px-1.5 py-2 text-center transition-all sm:min-h-[4.75rem] ${
                         isSelected
-                          ? "border-foreground/40 bg-accent/60 ring-2 ring-foreground/20"
+                          ? "border-foreground/40 bg-accent/60 ring-1 ring-foreground/20"
                           : "border-border hover:border-foreground/30"
                       } ${isNegative ? "bg-brand-pink/25" : "bg-card"}`}
                     >
                       {isSelected ? (
-                        <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                        <span className="absolute right-1 top-1 flex size-3.5 items-center justify-center rounded-full bg-primary text-[9px] leading-none text-primary-foreground">
                           ✓
                         </span>
                       ) : null}
                       <Icon
-                        className={`size-6 ${isNegative ? "text-primary" : "text-foreground/70"}`}
+                        className={`size-4 shrink-0 sm:size-[1.125rem] ${
+                          isNegative ? "text-primary" : "text-foreground/70"
+                        }`}
                       />
-                      <span className="text-xs font-bold uppercase leading-tight text-foreground">
+                      <span className="line-clamp-2 w-full text-[9px] font-bold uppercase leading-tight text-foreground sm:text-[10px]">
                         {behavior.behavior}
                       </span>
                       <span
-                        className={`text-xs font-semibold ${
+                        className={`text-[9px] font-semibold leading-none sm:text-[10px] ${
                           isNegative ? "text-primary" : "text-brand-green"
                         }`}
                       >
@@ -466,11 +472,13 @@ export function DailyStatInput() {
             <button
               type="button"
               onClick={focusNotes}
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card p-4 text-center hover:border-foreground/30"
+              className="flex min-h-[4.5rem] flex-col items-center justify-center gap-0.5 rounded-lg border border-dashed border-border bg-card px-1.5 py-2 text-center hover:border-foreground/30 sm:min-h-[4.75rem]"
             >
-              <Pencil className="size-6 text-foreground/70" />
-              <span className="text-xs font-bold uppercase text-foreground">Other / Notes</span>
-              <span className="text-xs text-muted-foreground">Add custom</span>
+              <Pencil className="size-4 text-foreground/70 sm:size-[1.125rem]" />
+              <span className="text-[9px] font-bold uppercase leading-tight text-foreground sm:text-[10px]">
+                Other / Notes
+              </span>
+              <span className="text-[9px] text-muted-foreground sm:text-[10px]">Add custom</span>
             </button>
           </div>
         </div>

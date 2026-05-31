@@ -6,7 +6,7 @@
 
 | Capability | Status | Notes |
 |------------|--------|-------|
-| Google OAuth | ✅ Implemented | Login + signup → `/auth/callback?next=/dashboard` |
+| Google OAuth | ✅ Implemented | Login + signup → `https://therosterleague.com/auth/callback` → `/dashboard` |
 | Email/password login | ✅ Implemented | `signInWithPassword` in `components/login-form.tsx` |
 | Email/password signup | ✅ Implemented | `app/signup/page.tsx` — optional nickname on sign up |
 | Forgot password | ✅ Implemented | `resetPasswordForEmail` → `/reset-password` via callback |
