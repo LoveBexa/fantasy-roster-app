@@ -97,7 +97,14 @@ export function LeagueTable() {
           <p className="px-5 py-8 text-sm text-muted-foreground">Loading league table...</p>
         ) : rows.length === 0 ? (
           <p className="px-5 py-8 text-sm text-muted-foreground">
-            No roster players yet. Add players and log daily stats to populate the league table.
+            No roster players yet.{" "}
+            <Link
+              href="/roster?add=1"
+              className="font-semibold text-primary underline underline-offset-2 hover:text-primary/80"
+            >
+              Add players
+            </Link>{" "}
+            and log daily stats to populate the league table.
           </p>
         ) : (
           rows.map((player) => (

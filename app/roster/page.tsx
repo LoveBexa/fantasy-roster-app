@@ -10,14 +10,20 @@ export const metadata = {
   description: "Manage your dating prospects. Track the potential.",
 }
 
-export default async function RosterPage() {
+export default async function RosterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ add?: string }>
+}) {
   const supabase = await createClient()
   const session = await getSessionUserContext(supabase)
+  const params = await searchParams
+  const initialShowAddForm = params.add === "1" || params.add === "true"
 
   return (
     <DashboardShell activePage="My Roster" user={session?.display ?? null}>
       <DashboardMain>
-        <RosterTable />
+        <RosterTable initialShowAddForm={initialShowAddForm} />
       </DashboardMain>
 
       <RightRail />

@@ -8,10 +8,12 @@ import { PageHeader } from "@/components/dashboard/page-header"
 import { HeartDoodle, StarDoodle } from "@/components/doodles"
 import { createClient } from "@/lib/supabase/client"
 import {
-  createRosterPlayer,
-  deleteRosterPlayer,
+  createRosterPlayerAction,
+  deleteRosterPlayerAction,
+  updateRosterPlayerAction,
+} from "@/app/roster/actions"
+import {
   fetchRosterPlayers,
-  updateRosterPlayer,
 } from "@/lib/roster/players"
 import {
   type Player,
@@ -25,11 +27,15 @@ import { DeletePlayerDialog } from "./delete-player-dialog"
 
 type SortOption = "lastUpdated" | "added" | "nickname"
 
-export function RosterTable() {
+type RosterTableProps = {
+  initialShowAddForm?: boolean
+}
+
+export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
   const [players, setPlayers] = useState<Player[]>([])
   const [filter, setFilter] = useState<PlayerStatus | "All">("All")
   const [sortBy, setSortBy] = useState<SortOption>("lastUpdated")
-  const [showAddForm, setShowAddForm] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(initialShowAddForm)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
   const [deletingPlayer, setDeletingPlayer] = useState<Player | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -86,17 +92,13 @@ export function RosterTable() {
     setError(null)
 
     try {
-      const supabase = createClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const result = await createRosterPlayerAction(player)
 
-      if (!user) {
-        setError("Sign in to add players.")
+      if (result.error) {
+        setError(result.error)
         return
       }
 
-      await createRosterPlayer(supabase, user.id, player)
       setShowAddForm(false)
       await loadPlayers()
     } catch (err) {
@@ -111,8 +113,13 @@ export function RosterTable() {
     setError(null)
 
     try {
-      const supabase = createClient()
-      await updateRosterPlayer(supabase, updated)
+      const result = await updateRosterPlayerAction(updated)
+
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
       setEditingPlayer(null)
       await loadPlayers()
     } catch (err) {
@@ -127,8 +134,13 @@ export function RosterTable() {
     setError(null)
 
     try {
-      const supabase = createClient()
-      await deleteRosterPlayer(supabase, id)
+      const result = await deleteRosterPlayerAction(id)
+
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
       setDeletingPlayer(null)
       await loadPlayers()
     } catch (err) {

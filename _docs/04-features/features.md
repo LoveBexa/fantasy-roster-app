@@ -6,16 +6,19 @@
 
 | Capability | Status | Notes |
 |------------|--------|-------|
-| Google OAuth | ✅ Implemented | `components/login-form.tsx` → `/auth/callback` → `/dashboard` |
-| Email/password login | 🔲 Disabled | UI visible; `emailPasswordDisabled = true` — fields non-functional |
-| Apple OAuth | 🔲 Disabled | Button visible; not wired |
-| Sign up page | ⏳ Not built | Login page links placeholder |
+| Google OAuth | ✅ Implemented | Login + signup → `/auth/callback?next=/dashboard` |
+| Email/password login | ✅ Implemented | `signInWithPassword` in `components/login-form.tsx` |
+| Email/password signup | ✅ Implemented | `app/signup/page.tsx` — optional nickname on sign up |
+| Forgot password | ✅ Implemented | `resetPasswordForEmail` → `/reset-password` via callback |
+| Apple OAuth | ❌ Removed | Google-only for social sign-in |
 | OAuth callback | ✅ Implemented | `app/auth/callback/route.ts` |
 | Session refresh | ✅ Implemented | `proxy.ts` via `getUser()` |
 | Protected routes | ⏳ Not enforced | Unauthenticated users can hit `/dashboard` URLs; data empty without session |
-| Logout | ✅ Implemented | `lib/auth/use-logout.ts` — sidebar + account |
+| Logout | ✅ Implemented | `lib/auth/use-logout.ts` — sidebar, top bar, account |
 
 **Google OAuth setup:** See [`08-deployment/deployment.md`](../08-deployment/deployment.md).
+
+**Password reset:** Google accounts use Google’s password flow — forgot-password page is for email/password users only.
 
 ---
 
@@ -24,14 +27,15 @@
 | Capability | Status |
 |------------|--------|
 | List players | ✅ Live from Supabase |
-| Add player | ✅ Nickname, emoji, description, status, relationship, notes |
+| Add player | ✅ Server action — nickname, emoji, description, status, relationship, notes |
 | Edit player | ✅ Dialog with full emoji picker |
-| Delete player | ✅ Confirmation dialog |
+| Delete player | ✅ Confirmation dialog + server action |
 | Filter by status | ✅ All / Active / Reserve / etc. |
 | Sort | ✅ Last updated, added, nickname |
+| Deep link add form | ✅ `/roster?add=1` opens add player form |
 | Photo upload | ⏳ Column exists; UI not wired |
 
-**Data:** `lib/roster/players.ts` · UI: `components/roster/roster-table.tsx`
+**Data:** `lib/roster/players.ts` · **Mutations:** `app/roster/actions.ts` (server actions) · UI: `components/roster/roster-table.tsx`
 
 **Player fields:** nickname, emoji (~150 options), description, status, relationship status, notes (250 chars).
 
@@ -64,7 +68,7 @@
 | Form arrows | ✅ Rank change day-to-day (up to 3) |
 | Consistency % | ✅ From behaviour points last 30 days |
 | Daily snapshots | ✅ Upsert on load + after stat save (needs migration 007) |
-| Empty state | ✅ CTA to add players / log stats |
+| Empty state | ✅ “Add players” links to `/roster?add=1` |
 | MVP / awards sidebar | 🔲 Mock data in `RightRail` |
 
 **Data:** `lib/league/league-table.ts` · UI: `components/dashboard/league-table.tsx`
@@ -76,19 +80,26 @@
 | Capability | Status |
 |------------|--------|
 | View email / Google connection | ✅ |
-| Edit nickname | ✅ Saved to `user_metadata.nickname` |
-| Avatar emoji picker | ✅ Saved to `user_metadata.avatar_emoji` |
+| Edit nickname | ✅ Saved to `user_profiles.nickname` (migration 008) |
+| Avatar emoji picker | ✅ Saved to `user_profiles.avatar_emoji` |
 | Delete account | 🔲 Placeholder action — emails support |
+
+**Display name in TopBar:** `user_profiles.nickname` → email prefix → “there” (not Google full name).
 
 ---
 
-### ✅ Marketing pages
+### ✅ Marketing & landing
 
 | Page | Route | Status |
 |------|-------|--------|
+| Homepage | `/` | ✅ `components/landing/landing-page-content.tsx` — editable copy in `lib/landing/landing-content.ts` |
 | About | `/about` | ✅ `components/about/about-page-content.tsx` |
 | How it works | `/how-it-works` | ✅ `components/how-it-works/how-it-works-content.tsx` |
-| Site nav links | `SiteNavbar` | ✅ ABOUT · HOW IT WORKS |
+| Login | `/login` | ✅ Hero + form + editorial block |
+| Sign up | `/signup` | ✅ Centered form + editorial block |
+| Site nav | `SiteNavbar` | ✅ Sticky on homepage; JOIN THE LEAGUE → `/login` |
+
+**Landing sections:** Hero, features bar, coded dashboard preview, how-it-works steps, join CTA (testimonial sticky notes on desktop), Built with AI editorial block.
 
 ---
 
@@ -142,3 +153,6 @@ React Native / Expo with push notifications.
 | Second save same player same day fails | Delete entry in Supabase or pick different date |
 | Snapshots / form arrows missing | Run migration `007_league_player_snapshots.sql` |
 | `permission denied for table` | Run migration `005_table_grants.sql` |
+| RLS error adding roster player | Run `009_roster_players_rls_fix.sql`; log out and back in |
+| `user_profiles` table missing | Run migration `008_user_profiles.sql` |
+| Nickname always shows Google name | Set nickname on Account page (stored in `user_profiles`) |

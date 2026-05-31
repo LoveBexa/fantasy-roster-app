@@ -33,6 +33,7 @@ Run in Supabase SQL Editor in order:
 | `supabase/migrations/006_scoring_behaviors_columns.sql` | Add description, created_at on behaviours |
 | `supabase/migrations/007_league_player_snapshots.sql` | Snapshots for rank history / form |
 | `supabase/migrations/008_user_profiles.sql` | User nickname + avatar profile table + signup trigger |
+| `supabase/migrations/009_roster_players_rls_fix.sql` | Auto-set user_id on roster insert + update RLS with check |
 
 Demo seed (optional): `supabase/seed/demo_roster_players.sql` — see [`seed-and-troubleshooting.md`](./seed-and-troubleshooting.md).
 

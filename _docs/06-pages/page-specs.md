@@ -1,24 +1,67 @@
 # 06 — Page Specifications
 
-> **Routing:** Login is **`/`** (`app/page.tsx`). Authenticated app uses `/dashboard`, `/stats`, `/roster`, `/account`. Marketing: `/about`, `/how-it-works`.
+> **Routing:** Marketing homepage is **`/`**. Auth: `/login`, `/signup`, `/forgot-password`, `/reset-password`. Authenticated app: `/dashboard`, `/stats`, `/roster`, `/account`. Marketing: `/about`, `/how-it-works`.
 
 ---
 
 ## Public pages
 
-### Login — `app/page.tsx` *(route `/`)*
+### Homepage — `app/page.tsx` *(route `/`)*
 
-**Status**: ✅ Google OAuth · 🔲 email/password disabled · 🔲 Apple disabled
+**Status**: ✅ Implemented
 
-**Layout**: Split — `LoginHero` (left) + `LoginForm` (right) · `SiteNavbar` above
+**Layout**: `SiteNavbar` (sticky) + `LandingPageContent`
+
+**Sections** (edit copy in `lib/landing/landing-content.ts`):
+1. Hero — headline, CTAs, `women-looking-phone.png`, pink sticky note
+2. Features bar — MVP Tracking, League Tables, etc.
+3. Dashboard preview — coded mock table + MVP / consistency / red flags cards
+4. How it works — 3-step preview on cream background
+5. Join CTA — “Ready to join?” card + floating testimonial sticky notes (desktop only)
+6. Editorial block — “Built with AI in 3 Days”
+
+**CTAs:** JOIN THE LEAGUE → `/login` · HOW IT WORKS → `/how-it-works`
+
+---
+
+### Login — `app/login/page.tsx` *(route `/login`)*
+
+**Status**: ✅ Google OAuth + email/password
+
+**Layout**: Split — `LoginHero` (left) + `LoginForm` (right) · `SiteNavbar` above · `EditorialBlock` below
 
 **LoginForm**:
-- Heading: "Welcome back, Roster Queen."
-- Email + password fields rendered but disabled (`emailPasswordDisabled = true`)
-- **Continue with Google** — `signInWithOAuth({ provider: "google", redirectTo: "/auth/callback" })`
-- Apple button visible, not wired
+- Email + password login via `signInWithPassword`
+- **Continue with Google** — `signInWithOAuth`
+- Forgot password → `/forgot-password`
+- Sign up link → `/signup`
 
-**OAuth callback**: `app/auth/callback/route.ts` → `/dashboard` on success, `/?error=auth` on failure.
+**OAuth callback**: `app/auth/callback/route.ts` → `/dashboard` on success, `/login?error=auth` on failure.
+
+---
+
+### Sign up — `app/signup/page.tsx` *(route `/signup`)*
+
+**Status**: ✅ Implemented
+
+**Layout**: Centered `SignupForm` · `EditorialBlock` below (no hero image)
+
+**SignupForm**:
+- Optional nickname field (saved to `user_profiles` when migration 008 applied)
+- Email + password + confirm password
+- Google OAuth sign-up
+- Link to `/login`
+
+---
+
+### Forgot / reset password
+
+| Route | File | Purpose |
+|-------|------|---------|
+| `/forgot-password` | `app/forgot-password/page.tsx` | Request reset email (`resetPasswordForEmail`) |
+| `/reset-password` | `app/reset-password/page.tsx` | Set new password after email link (`updateUser`) |
+
+Both use centered form layout + editorial block at bottom. Email/password accounts only — Google users reset via Google.
 
 ---
 
@@ -26,7 +69,7 @@
 
 **Status**: ✅ Implemented
 
-**Content**: `components/about/about-page-content.tsx` — hero with `four-women.png`, mission copy, contact links.
+**Content**: `components/about/about-page-content.tsx` — hero with `four-women.png`, mission copy, CTA → `/signup`.
 
 ---
 
@@ -34,16 +77,17 @@
 
 **Status**: ✅ Implemented
 
-**Content**: `components/how-it-works/how-it-works-content.tsx` — hero with `women-looking-phone.png`, step cards, fantasy vs roster comparison table.
+**Content**: `components/how-it-works/how-it-works-content.tsx` — hero with `women-looking-phone.png`, step cards, CTA → `/signup`.
 
 ---
 
 ## Dashboard pages
 
 Shared shell on authenticated routes:
-- `AppSidebar` — League Table, Daily Stats, My Roster, Account, Log out
-- `TopBar` — search (UI), user dropdown, logout
-- `DashboardMain` — `max-w-5xl px-8 py-8`
+- `AppSidebar` — desktop nav (hidden below `lg`)
+- `AppBottomNav` — mobile nav (below `lg`)
+- `TopBar` — search (UI), user dropdown (“Hi, {nickname}”), logout
+- `DashboardMain` — main content wrapper
 - `PageHeader` — shared title + subtitle pattern
 
 ---
@@ -56,11 +100,11 @@ Shared shell on authenticated routes:
 
 **Main column**: `<LeagueTable />` — period tabs, rank/points/form/consistency grid
 
-**Right rail**: `<RightRail />` — MVP, red flag, awards cards (**mock data**)
+**Right rail**: `<RightRail />` — weekly summary / recent entries (**mock data**)
 
-**Data**: Client fetch via `fetchLeagueTable()` in `components/dashboard/league-table.tsx`
+**Empty state:** “Add players” links to `/roster?add=1`
 
-**CTA on dashboard**: Link to `/stats` for daily stat entry (stat input removed from dashboard page).
+**CTA:** Link to `/stats` for daily stat entry
 
 See [`league-table.md`](./league-table.md) for calculation details.
 
@@ -74,16 +118,6 @@ See [`league-table.md`](./league-table.md) for calculation details.
 
 **UI**: `components/dashboard/daily-stat-input.tsx`
 
-**Layout**:
-- Page header: "DAILY STAT INPUT"
-- Player selector (dropdown from roster)
-- Date picker
-- Behaviour card grid (all 40 behaviours, tooltips for descriptions)
-- Live points total
-- 7-day form chart (`FormChart`)
-- Notes (250 chars)
-- Save → `saveStatEntry()` in `lib/stats/stat-entries.ts`
-
 **Empty state**: No roster players → link to `/roster`
 
 **On save**:
@@ -95,23 +129,19 @@ See [`league-table.md`](./league-table.md) for calculation details.
 
 ### My Roster — `app/roster/page.tsx` *(route `/roster`)*
 
-**Status**: ✅ Live CRUD
+**Status**: ✅ Live CRUD via server actions
 
 **Purpose**: Manage roster players.
 
+**Query params:** `?add=1` or `?add=true` — opens add player form on load (used from league table empty state)
+
 **UI**: `components/roster/roster-table.tsx`
 
-**Features**:
-- Filter by status (All / Active / Reserve / …)
-- Sort by last updated, added date, nickname
-- Add player form (`AddPlayerForm`) — scrollable emoji picker (~150 emojis)
-- Edit dialog (`EditPlayerDialog`) — same emoji picker
-- Delete confirmation (`DeletePlayerDialog`)
-- Table columns: emoji, nickname, description, status, relationship, dates, actions
+**Mutations:** `app/roster/actions.ts` — `createRosterPlayerAction`, `updateRosterPlayerAction`, `deleteRosterPlayerAction`
 
-**Data**: `fetchRosterPlayers`, `createRosterPlayer`, `updateRosterPlayer`, `deleteRosterPlayer` from `lib/roster/players.ts`
+**Data reads:** `fetchRosterPlayers` from `lib/roster/players.ts`
 
-RLS ensures only the signed-in user's rows are returned — no explicit `user_id` filter in query.
+RLS ensures only the signed-in user's rows are returned.
 
 ---
 
@@ -122,9 +152,13 @@ RLS ensures only the signed-in user's rows are returned — no explicit `user_id
 **UI**: `components/account/account-page-content.tsx`
 
 **Sections**:
-- Profile (email, Google connection badge)
-- Nickname + avatar emoji (saved to Supabase `user_metadata`)
-- Delete account (placeholder — directs to support email)
+- Avatar emoji picker (saved to `user_profiles.avatar_emoji`)
+- Nickname (saved to `user_profiles.nickname`)
+- Connected account (Google or email)
+- Delete account (placeholder)
+- Log out button
+
+**Session context:** `getSessionUserContext()` in `lib/auth/get-session-user.ts`
 
 ---
 
@@ -132,7 +166,6 @@ RLS ensures only the signed-in user's rows are returned — no explicit `user_id
 
 | Route | Purpose |
 |-------|---------|
-| `app/(auth)/signup` | Email signup |
 | `/scoring` | Reference page for all 40 behaviours |
 | `/history` | Chronological entry log |
 | `/awards` | MVP, red flag, consistency awards |
@@ -148,7 +181,9 @@ RLS ensures only the signed-in user's rows are returned — no explicit `user_id
 
 ---
 
-## Sidebar navigation (implemented)
+## Navigation (implemented)
+
+**Desktop sidebar** (`AppSidebar`, `lg+`):
 
 | Label | href |
 |-------|------|
@@ -157,4 +192,6 @@ RLS ensures only the signed-in user's rows are returned — no explicit `user_id
 | My Roster | `/roster` |
 | Account | `/account` |
 
-Defined in `components/dashboard/app-sidebar.tsx`.
+**Mobile bottom nav** (`AppBottomNav`, below `lg`): same four routes + icons.
+
+Defined in `components/dashboard/app-nav-items.ts`.

@@ -73,17 +73,12 @@ export async function createRosterPlayer(
   userId: string,
   player: PlayerInput
 ) {
-  const { data, error } = await supabase
-    .from(TABLES.rosterPlayers)
-    .insert({
-      [ROSTER_PLAYERS.userId]: userId,
-      ...playerToRow(player),
-    })
-    .select("*")
-    .single()
+  const { error } = await supabase.from(TABLES.rosterPlayers).insert({
+    [ROSTER_PLAYERS.userId]: userId,
+    ...playerToRow(player),
+  })
 
   if (error) throw toError(error, "Could not create roster player.")
-  return rowToPlayer(data as RosterPlayerRow)
 }
 
 export async function updateRosterPlayer(

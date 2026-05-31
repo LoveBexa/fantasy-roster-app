@@ -109,7 +109,7 @@ export function SignupForm() {
           <Input
             id="signup-nickname"
             type="text"
-            placeholder="Your nickname"
+            placeholder="Your name / nickname"
             autoComplete="nickname"
             value={nickname}
             onChange={(event) => setNickname(event.target.value)}

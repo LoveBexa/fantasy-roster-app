@@ -59,23 +59,27 @@ Women (primarily 25–40) actively dating who want to spot patterns early, reduc
 
 ## 🚀 Current status
 
-- **Phase 6 — Live data** (mostly complete)
-- **Done**: Google OAuth, roster CRUD, daily stats save, league table from Supabase, account page, marketing pages (`/about`, `/how-it-works`)
+- **Phase 6 — Live data + marketing** (mostly complete)
+- **Done**: Marketing homepage (`/`), auth (Google + email/password + signup + forgot password), roster CRUD via server actions, daily stats, league table, account (nickname + emoji in `user_profiles`), mobile bottom nav
 - **Partial**: Right rail on dashboard still mock data; route protection not enforced in `proxy.ts`
-- **Known gaps**: Duplicate stat entry same day errors (insert-only, no upsert); email/Apple auth UI disabled
+- **Known gaps**: Duplicate stat entry same day errors (insert-only, no upsert); player photo upload not wired
 
 ### Key routes
 
 | Route | File | Status |
 |-------|------|--------|
-| `/` | `app/page.tsx` | Login — Google OAuth live; email/password disabled |
+| `/` | `app/page.tsx` | Marketing homepage — hero, features, dashboard preview, join CTA, editorial |
+| `/login` | `app/login/page.tsx` | Login — Google OAuth + email/password; forgot password link |
+| `/signup` | `app/signup/page.tsx` | Sign up — email/password + Google; optional nickname |
+| `/forgot-password` | `app/forgot-password/page.tsx` | Password reset email request |
+| `/reset-password` | `app/reset-password/page.tsx` | Set new password after email link |
 | `/dashboard` | `app/dashboard/page.tsx` | League table — **live Supabase data** |
 | `/stats` | `app/(dashboard)/stats/page.tsx` | Daily stat input — **live save** |
-| `/roster` | `app/roster/page.tsx` | My Roster — **live CRUD** |
+| `/roster` | `app/roster/page.tsx` | My Roster — **live CRUD** (`?add=1` opens add form) |
 | `/account` | `app/account/page.tsx` | Profile, nickname, emoji, logout |
 | `/about` | `app/about/page.tsx` | Marketing |
 | `/how-it-works` | `app/how-it-works/page.tsx` | Marketing |
-| `/auth/callback` | `app/auth/callback/route.ts` | OAuth → session → `/dashboard` |
+| `/auth/callback` | `app/auth/callback/route.ts` | OAuth / email confirm → session → `/dashboard` |
 
 ### Supabase migrations (run in order in SQL Editor)
 
@@ -88,6 +92,8 @@ Women (primarily 25–40) actively dating who want to spot patterns early, reduc
 | `005_table_grants.sql` | Fixes “permission denied for table …” |
 | `006_scoring_behaviors_columns.sql` | Adds description, created_at |
 | `007_league_player_snapshots.sql` | Daily rank snapshots for form arrows |
+| `008_user_profiles.sql` | Nickname + avatar emoji per user (`user_profiles`) |
+| `009_roster_players_rls_fix.sql` | Auto-set `user_id` on roster insert + update RLS |
 
 Demo data (optional): `supabase/seed/demo_roster_players.sql` — see [`03-database/seed-and-troubleshooting.md`](./03-database/seed-and-troubleshooting.md).
 
