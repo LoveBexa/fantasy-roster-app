@@ -43,8 +43,8 @@ export function SiteNavbar({
             href={HOME_HREF}
             tone="inverted"
             className="items-center text-center md:items-start md:text-left"
-            titleClassName="text-[1.75rem] md:text-4xl"
-            taglineClassName="text-[0.7rem] font-medium tracking-[0.28em] md:text-xs md:tracking-[0.5em]"
+            titleClassName="text-[1.75rem] md:text-3xl"
+            taglineClassName="text-[0.7rem] font-medium tracking-[0.28em] md:text-[0.65rem] md:tracking-[0.5em]"
           />
 
           <div className="hidden items-center gap-9 md:flex">
