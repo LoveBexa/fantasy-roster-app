@@ -212,9 +212,9 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
   const getStatusColor = (status: PlayerStatus) => {
     switch (status) {
       case "Active":
-        return "bg-card border-foreground/30 text-foreground"
-      case "Missing":
         return "bg-card border-brand-green text-brand-green"
+      case "Missing":
+        return "bg-card border-orange-500 text-orange-600"
       case "Ghosted":
         return "bg-card border-muted-foreground text-muted-foreground"
       case "Removed":
@@ -414,9 +414,9 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                             className={cn(
                               "size-1 shrink-0 rounded-full",
                               player.status === "Active"
-                                ? "bg-foreground"
+                                ? "bg-brand-green"
                                 : player.status === "Missing"
-                                  ? "bg-brand-green"
+                                  ? "bg-orange-500"
                                   : player.status === "Ghosted"
                                     ? "bg-muted-foreground"
                                     : "bg-primary"
@@ -513,9 +513,9 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                       className={cn(
                         "size-1.5 rounded-full",
                         player.status === "Active"
-                          ? "bg-foreground"
+                          ? "bg-brand-green"
                           : player.status === "Missing"
-                            ? "bg-brand-green"
+                            ? "bg-orange-500"
                             : player.status === "Ghosted"
                               ? "bg-muted-foreground"
                               : "bg-primary"
