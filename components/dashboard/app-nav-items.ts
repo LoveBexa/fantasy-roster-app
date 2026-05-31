@@ -21,7 +21,7 @@ export type AppNavItem = {
 
 export const APP_NAV_ITEMS: AppNavItem[] = [
   { label: "League Table", shortLabel: "League", icon: Trophy, href: "/dashboard" },
-  { label: "Add Daily Stats", shortLabel: "Stats", icon: ClipboardList, href: "/stats" },
+  { label: "Daily Stats", shortLabel: "Stats", icon: ClipboardList, href: "/stats" },
   { label: "My Roster", shortLabel: "Roster", icon: Heart, href: "/roster" },
   { label: "Account", shortLabel: "Account", icon: Settings, href: "/account" },
 ]

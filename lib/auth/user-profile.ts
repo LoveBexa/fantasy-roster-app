@@ -20,12 +20,11 @@ export function parseAvatarEmojiFromMeta(value: unknown): AccountEmoji | null {
     : null
 }
 
-export function getUserProfile(
-  user: User | null,
+/** Builds account UI profile data for a signed-in user (always defined when `user` exists). */
+export function buildUserProfile(
+  user: User,
   profileRow?: UserProfileRow | null
-): UserProfile | null {
-  if (!user) return null
-
+): UserProfile {
   const meta = user.user_metadata ?? {}
   const googleIdentity = user.identities?.find((identity) => identity.provider === "google")
 
@@ -48,4 +47,12 @@ export function getUserProfile(
     isGoogleConnected: Boolean(googleIdentity),
     providerLabel: googleIdentity ? "Google Account" : "Email account",
   }
+}
+
+export function getUserProfile(
+  user: User | null,
+  profileRow?: UserProfileRow | null
+): UserProfile | null {
+  if (!user) return null
+  return buildUserProfile(user, profileRow)
 }
