@@ -57,7 +57,7 @@ export const landingDashboard = {
       rank: 3,
       name: "Gym Bro #2",
       emoji: "🏋️",
-      status: "Reserve",
+      status: "Missing",
       points: 196,
       trend: "down" as const,
       lastUpdated: "3 days ago",

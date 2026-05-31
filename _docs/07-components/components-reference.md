@@ -125,7 +125,7 @@ interface Player {
   nickname: string
   description: string
   emoji: string
-  status: "Active" | "Reserve" | "Free Agent" | "Ghosted" | "Removed"
+  status: "Active" | "Missing" | "Ghosted" | "Removed"
   relationshipStatus: RelationshipStatus | null
   addedDate: string
   lastUpdated: string

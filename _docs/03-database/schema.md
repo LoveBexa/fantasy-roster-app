@@ -64,8 +64,7 @@ create table roster_players (
 | Status | Meaning |
 |--------|---------|
 | `Active` | On the roster, actively tracked |
-| `Reserve` | On pause / backup option |
-| `Free Agent` | New or potential |
+| `Missing` | On pause / not currently in the picture |
 | `Ghosted` | No longer in contact |
 | `Removed` | Cut from roster |
 

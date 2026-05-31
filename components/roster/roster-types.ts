@@ -1,4 +1,4 @@
-export type PlayerStatus = "Active" | "Reserve" | "Free Agent" | "Ghosted" | "Removed"
+export type PlayerStatus = "Active" | "Missing" | "Ghosted" | "Removed"
 
 export type RelationshipStatus =
   | "Potential Partner"
@@ -23,8 +23,7 @@ export interface Player {
 
 export const PLAYER_STATUSES: PlayerStatus[] = [
   "Active",
-  "Reserve",
-  "Free Agent",
+  "Missing",
   "Ghosted",
   "Removed",
 ]
