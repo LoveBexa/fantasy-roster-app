@@ -97,7 +97,7 @@ insert into public.roster_players (
     'Love Handles Harry',
     'Soft heart, softer middle. Always brings snacks and emotional availability.',
     '🍔',
-    'Reserve',
+    'Missing',
     'Potential Partner',
     'Ordered you both desserts “for research.” No regrets.'
   ),

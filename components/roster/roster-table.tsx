@@ -213,10 +213,8 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
     switch (status) {
       case "Active":
         return "bg-card border-foreground/30 text-foreground"
-      case "Reserve":
+      case "Missing":
         return "bg-card border-brand-green text-brand-green"
-      case "Free Agent":
-        return "bg-card border-primary text-primary"
       case "Ghosted":
         return "bg-card border-muted-foreground text-muted-foreground"
       case "Removed":
@@ -319,13 +317,7 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                     : "border-border bg-card text-foreground hover:bg-muted"
                 )}
               >
-                <span className="sm:hidden">
-                  {status === "Free Agent"
-                    ? "Free Ag."
-                    : status === "Removed"
-                      ? "Removed"
-                      : status}
-                </span>
+                <span className="sm:hidden">{status}</span>
                 <span className="hidden sm:inline">{status}</span>
               </button>
             ))}
@@ -423,13 +415,11 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                               "size-1 shrink-0 rounded-full",
                               player.status === "Active"
                                 ? "bg-foreground"
-                                : player.status === "Reserve"
+                                : player.status === "Missing"
                                   ? "bg-brand-green"
-                                  : player.status === "Free Agent"
-                                    ? "bg-primary"
-                                    : player.status === "Ghosted"
-                                      ? "bg-muted-foreground"
-                                      : "bg-primary"
+                                  : player.status === "Ghosted"
+                                    ? "bg-muted-foreground"
+                                    : "bg-primary"
                             )}
                           />
                           <span className="truncate">{player.status}</span>
@@ -524,13 +514,11 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
                         "size-1.5 rounded-full",
                         player.status === "Active"
                           ? "bg-foreground"
-                          : player.status === "Reserve"
+                          : player.status === "Missing"
                             ? "bg-brand-green"
-                            : player.status === "Free Agent"
-                              ? "bg-primary"
-                              : player.status === "Ghosted"
-                                ? "bg-muted-foreground"
-                                : "bg-primary"
+                            : player.status === "Ghosted"
+                              ? "bg-muted-foreground"
+                              : "bg-primary"
                       )}
                     />
                     {player.status}

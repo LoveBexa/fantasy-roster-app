@@ -75,8 +75,7 @@ export function AddPlayerForm({ onAdd, onCancel, isSubmitting = false }: AddPlay
             {PLAYER_STATUSES.map((s) => (
               <option key={s} value={s}>
                 {s === "Active" && "● "}
-                {s === "Reserve" && "● "}
-                {s === "Free Agent" && "● "}
+                {s === "Missing" && "● "}
                 {s === "Ghosted" && "● "}
                 {s === "Removed" && "● "}
                 {s}

@@ -30,7 +30,7 @@
 | Add player | ✅ Server action — nickname, emoji, description, status, relationship, notes |
 | Edit player | ✅ Dialog with full emoji picker |
 | Delete player | ✅ Confirmation dialog + server action |
-| Filter by status | ✅ All / Active / Reserve / etc. |
+| Filter by status | ✅ All / Active / Missing / etc. |
 | Sort | ✅ Last updated, added, nickname |
 | Deep link add form | ✅ `/roster?add=1` opens add player form |
 | Photo upload | ⏳ Column exists; UI not wired |
