@@ -112,7 +112,7 @@ const featureItems = [
   },
   {
     title: "YOUR TURN",
-    subtitle: "What will you build in 4 days?",
+    subtitle: "What will you build in 3 days?",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-8">
         <path d="M12 15V5" strokeLinecap="round" />

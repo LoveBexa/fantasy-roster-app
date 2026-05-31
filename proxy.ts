@@ -1,7 +1,16 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { AUTH_CALLBACK_PATH } from "@/lib/auth/callback-url"
 
 export async function proxy(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl
+
+  if (pathname === "/" && searchParams.has("code")) {
+    const url = request.nextUrl.clone()
+    url.pathname = AUTH_CALLBACK_PATH
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -23,7 +32,20 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (
+    user &&
+    (pathname === "/" || pathname === "/login" || pathname === "/signup") &&
+    !searchParams.has("error")
+  ) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/dashboard"
+    url.search = ""
+    return NextResponse.redirect(url)
+  }
 
   return supabaseResponse
 }

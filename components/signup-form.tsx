@@ -9,6 +9,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GoogleIcon, StarDoodle } from "@/components/doodles"
 import { createClient } from "@/lib/supabase/client"
+import {
+  DEFAULT_POST_AUTH_PATH,
+  getAuthCallbackUrl,
+  getOAuthCallbackUrl,
+} from "@/lib/auth/callback-url"
 import { saveUserProfile } from "@/lib/auth/user-profile-db"
 
 export function SignupForm() {
@@ -32,7 +37,7 @@ export function SignupForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: getOAuthCallbackUrl(window.location.origin),
       },
     })
 
@@ -67,7 +72,10 @@ export function SignupForm() {
       password,
       options: {
         data: trimmedNickname ? { nickname: trimmedNickname } : undefined,
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        emailRedirectTo: getAuthCallbackUrl(
+          window.location.origin,
+          DEFAULT_POST_AUTH_PATH
+        ),
       },
     })
 
