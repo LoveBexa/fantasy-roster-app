@@ -30,13 +30,13 @@ export function TopBar({ user }: TopBarProps) {
   const greeting = user ? `Hi, ${user.firstName}` : "Hi there"
 
   return (
-    <header className="flex items-center justify-between gap-3 border-b border-border bg-card/40 px-4 py-3 md:gap-4 md:px-8 md:py-4">
+    <header className="sticky top-0 z-40 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-4 py-3 md:gap-4 md:px-8 md:py-4 lg:static lg:bg-card/40">
       <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-4">
         <div className="min-w-0 lg:hidden">
-          <p className="truncate font-serif text-lg font-bold leading-tight text-primary">
+          <p className="truncate font-serif text-2xl font-bold leading-none tracking-tight text-primary">
             THE ROSTER
           </p>
-          <p className="truncate text-[0.6rem] font-semibold tracking-[0.35em] text-primary/50">
+          <p className="mt-0.5 truncate text-[0.65rem] font-semibold tracking-[0.28em] text-primary/55">
             FANTASY LEAGUE
           </p>
         </div>
@@ -55,24 +55,26 @@ export function TopBar({ user }: TopBarProps) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted"
+            className="flex max-w-[45vw] items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-muted sm:max-w-none sm:px-2 sm:py-1.5"
           >
-            <Avatar className="size-9">
+            <Avatar className="size-10 shrink-0 sm:size-9">
               {!user?.avatarEmoji && user?.avatarUrl ? (
                 <AvatarImage src={user.avatarUrl} alt={`${user.name}'s profile`} />
               ) : null}
               <AvatarFallback
                 className={
                   user?.avatarEmoji
-                    ? "bg-brand-pink/60 text-lg"
-                    : "bg-primary/10 text-xs font-semibold text-primary"
+                    ? "bg-brand-pink/60 text-xl sm:text-lg"
+                    : "bg-primary/10 text-sm font-semibold text-primary"
                 }
               >
                 {user?.avatarEmoji ?? (user ? getInitials(user.name) : "?")}
               </AvatarFallback>
             </Avatar>
-            <span className="hidden text-sm font-semibold text-foreground sm:inline">{greeting}</span>
-            <ChevronDown className="size-4 text-muted-foreground" />
+            <span className="truncate text-sm font-semibold text-foreground sm:text-sm">
+              {greeting}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
           </button>
         </DropdownMenuTrigger>
 

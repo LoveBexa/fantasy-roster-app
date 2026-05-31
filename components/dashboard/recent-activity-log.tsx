@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   CalendarDays,
   Check,
   ChevronDown,
   ChevronUp,
   Trash2,
+  X,
 } from "lucide-react"
 import {
   AlertDialog,
@@ -42,6 +43,24 @@ export function RecentActivityLog({
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<RecentStatEntry | null>(null)
 
+  useEffect(() => {
+    const scrollToSection = () => {
+      if (window.location.hash !== "#recent-activity-log") return
+      document
+        .getElementById("recent-activity-log")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+
+    scrollToSection()
+    const retryTimer = window.setTimeout(scrollToSection, 150)
+    window.addEventListener("hashchange", scrollToSection)
+
+    return () => {
+      window.clearTimeout(retryTimer)
+      window.removeEventListener("hashchange", scrollToSection)
+    }
+  }, [isLoading])
+
   const displayedCount = entries.length
   const showingLabel =
     totalCount <= 10
@@ -50,8 +69,9 @@ export function RecentActivityLog({
 
   return (
     <section
+      id="recent-activity-log"
       aria-labelledby="recent-activity-heading"
-      className="rounded-2xl border border-border bg-accent/25 p-6"
+      className="scroll-mt-8 rounded-2xl border border-border bg-accent/25 p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/60 pb-5">
         <div>
@@ -172,15 +192,23 @@ export function RecentActivityLog({
                           Selected behaviours
                         </h3>
                         <ul className="mt-3 space-y-2">
-                          {entry.behaviors.map((behavior) => (
-                            <li
-                              key={`${entry.id}-${behavior.behavior}`}
-                              className="flex items-start gap-2 text-sm text-foreground"
-                            >
-                              <Check className="mt-0.5 size-4 shrink-0 text-brand-green" />
-                              <span>{behavior.behavior}</span>
-                            </li>
-                          ))}
+                          {entry.behaviors.map((behavior) => {
+                            const isNegative = behavior.points < 0
+
+                            return (
+                              <li
+                                key={`${entry.id}-${behavior.behavior}`}
+                                className="flex items-start gap-2 text-sm text-foreground"
+                              >
+                                {isNegative ? (
+                                  <X className="mt-0.5 size-4 shrink-0 text-primary" />
+                                ) : (
+                                  <Check className="mt-0.5 size-4 shrink-0 text-brand-green" />
+                                )}
+                                <span>{behavior.behavior}</span>
+                              </li>
+                            )
+                          })}
                         </ul>
                       </div>
 

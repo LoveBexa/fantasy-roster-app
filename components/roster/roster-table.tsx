@@ -21,6 +21,14 @@ import {
   PLAYER_STATUSES,
   RELATIONSHIP_STATUSES,
 } from "./roster-types"
+import {
+  canAddRosterPlayer,
+  formatRosterLimitLabel,
+  formatRosterSlotsUsed,
+  FREE_TIER_LIMIT_REACHED_MESSAGE,
+  FREE_TIER_LIMIT_REACHED_TITLE,
+  isRosterLimitReached,
+} from "@/lib/roster/tier-limits"
 import { AddPlayerForm } from "./add-player-form"
 import { EditPlayerDialog } from "./edit-player-dialog"
 import { DeletePlayerDialog } from "./delete-player-dialog"
@@ -37,7 +45,7 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
   const [players, setPlayers] = useState<Player[]>([])
   const [filter, setFilter] = useState<PlayerStatus | "All">("All")
   const [sortBy, setSortBy] = useState<SortOption>("lastUpdated")
-  const [showAddForm, setShowAddForm] = useState(initialShowAddForm)
+  const [showAddForm, setShowAddForm] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
   const [deletingPlayer, setDeletingPlayer] = useState<Player | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -82,6 +90,20 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
     void loadPlayers()
   }, [loadPlayers])
 
+  useEffect(() => {
+    if (isLoading) return
+    if (initialShowAddForm && canAddRosterPlayer(players.length)) {
+      setShowAddForm(true)
+    }
+    if (isRosterLimitReached(players.length)) {
+      setShowAddForm(false)
+    }
+  }, [isLoading, initialShowAddForm, players.length])
+
+  const playerCount = players.length
+  const atRosterLimit = isRosterLimitReached(playerCount)
+  const canAddPlayer = canAddRosterPlayer(playerCount)
+
   const filteredPlayers = players.filter(
     (p) => filter === "All" || p.status === filter
   )
@@ -97,6 +119,8 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
   const handleAddPlayer = async (
     player: Omit<Player, "id" | "addedDate" | "lastUpdated">
   ) => {
+    if (!canAddPlayer) return
+
     setIsSaving(true)
     setError(null)
 
@@ -116,10 +140,20 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
 
       await loadPlayers({ silent: true })
     } catch (err) {
-      setError(getErrorMessage(err, "Could not add player."))
+      const message = getErrorMessage(err, "Could not add player.")
+      setError(
+        message === FREE_TIER_LIMIT_REACHED_TITLE
+          ? null
+          : message
+      )
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleToggleAddForm = () => {
+    if (!showAddForm && atRosterLimit) return
+    setShowAddForm((open) => !open)
   }
 
   const handleEditPlayer = async (updated: Player) => {
@@ -202,15 +236,34 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
         subtitle="You're the manager. Build your roster. Track the potential."
         icon={<HeartDoodle className="size-8 text-primary" />}
         action={
-          <Button
-            onClick={() => setShowAddForm(!showAddForm)}
-            disabled={isSaving}
-            className="rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-          >
-            {showAddForm ? "✕ CLOSE" : "+ ADD PLAYER"}
-          </Button>
+          <div className="flex flex-col items-end gap-2">
+            <p className="text-xs font-medium text-muted-foreground">
+              {formatRosterLimitLabel(playerCount)}
+            </p>
+            <Button
+              onClick={handleToggleAddForm}
+              disabled={isSaving || (!showAddForm && atRosterLimit)}
+              className="rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              {showAddForm ? "✕ CLOSE" : "+ ADD PLAYER"}
+            </Button>
+          </div>
         }
       />
+
+      {atRosterLimit ? (
+        <div
+          className="rounded-lg border border-border bg-muted/40 px-4 py-4"
+          role="status"
+        >
+          <p className="text-sm font-bold text-foreground">
+            {FREE_TIER_LIMIT_REACHED_TITLE}
+          </p>
+          <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
+            {FREE_TIER_LIMIT_REACHED_MESSAGE}
+          </p>
+        </div>
+      ) : null}
 
       {error ? (
         <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive" role="alert">
@@ -218,13 +271,13 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
         </p>
       ) : null}
 
-      {showAddForm && (
+      {showAddForm && canAddPlayer ? (
         <AddPlayerForm
           onAdd={handleAddPlayer}
           onCancel={() => setShowAddForm(false)}
           isSubmitting={isSaving}
         />
-      )}
+      ) : null}
 
       {editingPlayer && (
         <EditPlayerDialog
@@ -293,9 +346,18 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
           <p className="px-6 py-10 text-center text-sm text-muted-foreground">
             Loading roster...
           </p>
+        ) : playerCount === 0 ? (
+          <div className="space-y-2 px-6 py-10 text-center">
+            <p className="text-xs font-medium text-muted-foreground">
+              {formatRosterSlotsUsed(0)}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              No players yet. Add your first roster player above.
+            </p>
+          </div>
         ) : sortedPlayers.length === 0 ? (
           <p className="px-6 py-10 text-center text-sm text-muted-foreground">
-            No players yet. Add your first roster player above.
+            No players match this filter.
           </p>
         ) : (
           sortedPlayers.map((player) => {

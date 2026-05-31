@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import { toError } from "@/lib/supabase/errors"
 import { ROSTER_PLAYERS, TABLES } from "@/lib/db/columns"
+import {
+  canAddRosterPlayer,
+  FREE_TIER_LIMIT_REACHED_TITLE,
+} from "@/lib/roster/tier-limits"
 import type {
   Player,
   PlayerStatus,
@@ -68,6 +72,15 @@ export async function fetchRosterPlayers(supabase: SupabaseClient) {
   return (data as RosterPlayerRow[]).map(rowToPlayer)
 }
 
+export async function fetchRosterPlayerCount(supabase: SupabaseClient) {
+  const { count, error } = await supabase
+    .from(TABLES.rosterPlayers)
+    .select("*", { count: "exact", head: true })
+
+  if (error) throw toError(error, "Could not count roster players.")
+  return count ?? 0
+}
+
 export async function createRosterPlayer(
   supabase: SupabaseClient,
   player: PlayerInput
@@ -79,6 +92,11 @@ export async function createRosterPlayer(
 
   if (authError || !user) {
     throw new Error("Sign in to add players.")
+  }
+
+  const currentCount = await fetchRosterPlayerCount(supabase)
+  if (!canAddRosterPlayer(currentCount)) {
+    throw new Error(FREE_TIER_LIMIT_REACHED_TITLE)
   }
 
   const { data, error } = await supabase

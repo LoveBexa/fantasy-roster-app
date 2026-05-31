@@ -129,7 +129,7 @@ export function RightRail() {
           asChild
           className="mt-4 w-full rounded-full border-border text-xs font-semibold"
         >
-          <Link href="/stats">View on Daily Stats</Link>
+          <Link href="/stats#recent-activity-log">View Recent Activity</Link>
         </Button>
       </div>
 

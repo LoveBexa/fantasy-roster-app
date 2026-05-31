@@ -5,9 +5,14 @@ import { createClient } from "@/lib/supabase/server"
 import {
   createRosterPlayer,
   deleteRosterPlayer,
+  fetchRosterPlayerCount,
   updateRosterPlayer,
   type PlayerInput,
 } from "@/lib/roster/players"
+import {
+  canAddRosterPlayer,
+  FREE_TIER_LIMIT_REACHED_TITLE,
+} from "@/lib/roster/tier-limits"
 import type { Player } from "@/components/roster/roster-types"
 import { toError } from "@/lib/supabase/errors"
 
@@ -24,6 +29,11 @@ export async function createRosterPlayerAction(input: PlayerInput) {
 
   if (!user) {
     return { error: "Sign in to add players." }
+  }
+
+  const currentCount = await fetchRosterPlayerCount(supabase)
+  if (!canAddRosterPlayer(currentCount)) {
+    return { error: FREE_TIER_LIMIT_REACHED_TITLE }
   }
 
   try {

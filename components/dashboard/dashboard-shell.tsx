@@ -19,7 +19,7 @@ export function DashboardShell({ activePage, user, children }: DashboardShellPro
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar user={user} />
 
-        <div className="flex min-w-0 flex-1 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
+        <div className="flex min-w-0 flex-1 pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
           <div className="flex min-w-0 flex-1">{children}</div>
         </div>
       </div>
