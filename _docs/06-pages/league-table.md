@@ -130,7 +130,7 @@ Server page (`app/dashboard/page.tsx`) only loads user display for TopBar; table
 | Condition | Message |
 |-----------|---------|
 | Not signed in | "Sign in to view your league table." |
-| No players | "No roster players yet. Add players and log daily stats…" |
+| No players | “Add players” links to `/roster?add=1` (opens add form) |
 | Error | Red alert with message from `getErrorMessage()` |
 
 ---

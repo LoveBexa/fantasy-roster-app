@@ -2,18 +2,18 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Image from "next/image"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { HeartDoodle, StarDoodle } from "@/components/doodles"
 import { createClient } from "@/lib/supabase/client"
+import { getErrorMessage } from "@/lib/supabase/errors"
 import {
-  createRosterPlayerAction,
-  deleteRosterPlayerAction,
-  updateRosterPlayerAction,
-} from "@/app/roster/actions"
-import {
+  createRosterPlayer,
+  deleteRosterPlayer,
   fetchRosterPlayers,
+  updateRosterPlayer,
 } from "@/lib/roster/players"
 import {
   type Player,
@@ -32,6 +32,8 @@ type RosterTableProps = {
 }
 
 export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [players, setPlayers] = useState<Player[]>([])
   const [filter, setFilter] = useState<PlayerStatus | "All">("All")
   const [sortBy, setSortBy] = useState<SortOption>("lastUpdated")
@@ -42,10 +44,12 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
-  const loadPlayers = useCallback(async () => {
+  const loadPlayers = useCallback(async (options?: { silent?: boolean }) => {
     const supabase = createClient()
-    setError(null)
-    setIsLoading(true)
+    if (!options?.silent) {
+      setError(null)
+      setIsLoading(true)
+    }
 
     try {
       const {
@@ -59,13 +63,18 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
       }
 
       const rows = await fetchRosterPlayers(supabase)
-      setPlayers(rows)
+      setPlayers((prev) => {
+        if (rows.length > 0) return rows
+        return prev.length > 0 ? prev : rows
+      })
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Could not load roster players."
       setError(message)
     } finally {
-      setIsLoading(false)
+      if (!options?.silent) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
@@ -92,17 +101,22 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
     setError(null)
 
     try {
-      const result = await createRosterPlayerAction(player)
+      const supabase = createClient()
+      const created = await createRosterPlayer(supabase, player)
 
-      if (result.error) {
-        setError(result.error)
-        return
+      setPlayers((prev) => {
+        if (prev.some((p) => p.id === created.id)) return prev
+        return [created, ...prev]
+      })
+      setShowAddForm(false)
+
+      if (searchParams.get("add")) {
+        router.replace("/roster", { scroll: false })
       }
 
-      setShowAddForm(false)
-      await loadPlayers()
+      await loadPlayers({ silent: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not add player.")
+      setError(getErrorMessage(err, "Could not add player."))
     } finally {
       setIsSaving(false)
     }
@@ -113,17 +127,22 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
     setError(null)
 
     try {
-      const result = await updateRosterPlayerAction(updated)
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
-      if (result.error) {
-        setError(result.error)
+      if (!user) {
+        setError("Sign in to edit players.")
         return
       }
 
+      const saved = await updateRosterPlayer(supabase, updated)
+      setPlayers((prev) => prev.map((p) => (p.id === saved.id ? saved : p)))
       setEditingPlayer(null)
-      await loadPlayers()
+      await loadPlayers({ silent: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not update player.")
+      setError(getErrorMessage(err, "Could not update player."))
     } finally {
       setIsSaving(false)
     }
@@ -134,17 +153,22 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
     setError(null)
 
     try {
-      const result = await deleteRosterPlayerAction(id)
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
-      if (result.error) {
-        setError(result.error)
+      if (!user) {
+        setError("Sign in to delete players.")
         return
       }
 
+      await deleteRosterPlayer(supabase, id)
+      setPlayers((prev) => prev.filter((p) => p.id !== id))
       setDeletingPlayer(null)
-      await loadPlayers()
+      await loadPlayers({ silent: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not delete player.")
+      setError(getErrorMessage(err, "Could not delete player."))
     } finally {
       setIsSaving(false)
     }
@@ -175,7 +199,7 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
       <PageHeader
         id="roster-heading"
         title="MY ROSTERS"
-        subtitle="You're the coach. Build your roster. Track the potential."
+        subtitle="You're the manager. Build your roster. Track the potential."
         icon={<HeartDoodle className="size-8 text-primary" />}
         action={
           <Button

@@ -94,6 +94,8 @@ Women (primarily 25–40) actively dating who want to spot patterns early, reduc
 | `007_league_player_snapshots.sql` | Daily rank snapshots for form arrows |
 | `008_user_profiles.sql` | Nickname + avatar emoji per user (`user_profiles`) |
 | `009_roster_players_rls_fix.sql` | Auto-set `user_id` on roster insert + update RLS |
+| `010_roster_players_insert_rls_fix.sql` | Security definer trigger + authenticated insert policy |
+| `011_roster_players_rls_complete.sql` | **Run this if RLS still fails** — full select/insert/update/delete policies + triggers |
 
 Demo data (optional): `supabase/seed/demo_roster_players.sql` — see [`03-database/seed-and-troubleshooting.md`](./03-database/seed-and-troubleshooting.md).
 

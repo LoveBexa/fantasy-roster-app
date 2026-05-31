@@ -25,7 +25,7 @@ const pillars = [
   {
     title: "The Roster",
     icon: Heart,
-    body: "You're the coach. You decide who's starting, who's benched, and who's cut.",
+    body: "You're the manager. You decide who's starting, who's benched, and who's cut.",
   },
   {
     title: "The Insights",

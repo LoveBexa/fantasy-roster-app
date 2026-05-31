@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { DashboardMain } from "@/components/dashboard/dashboard-main"
 import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { RightRail } from "@/components/dashboard/right-rail"
@@ -23,7 +24,13 @@ export default async function RosterPage({
   return (
     <DashboardShell activePage="My Roster" user={session?.display ?? null}>
       <DashboardMain>
-        <RosterTable initialShowAddForm={initialShowAddForm} />
+        <Suspense
+          fallback={
+            <p className="text-sm text-muted-foreground">Loading roster...</p>
+          }
+        >
+          <RosterTable initialShowAddForm={initialShowAddForm} />
+        </Suspense>
       </DashboardMain>
 
       <RightRail />

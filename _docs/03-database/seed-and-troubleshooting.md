@@ -111,7 +111,7 @@ Supabase → **Authentication → URL Configuration**:
 | Column `emoji` / `description` does not exist | Legacy table | Run `004_roster_players_columns.sql` |
 | Duplicate key on stat save same day | Unique `(user_id, player_id, entry_date)` | Edit/delete existing entry first; upsert not built yet |
 | Form arrows missing | Snapshots table missing | Run `007_league_player_snapshots.sql` |
-| RLS error adding roster player | Session/auth mismatch or missing grants | Log out/in; run `005_table_grants.sql` and `009_roster_players_rls_fix.sql` |
+| RLS error adding/updating roster player | Missing or wrong RLS policies / grants | Run `005_table_grants.sql` then `011_roster_players_rls_complete.sql`; log out and back in |
 | Supabase error not `instanceof Error` | Plain object errors | Handled via `lib/supabase/errors.ts` → `toError()` |
 
 ---

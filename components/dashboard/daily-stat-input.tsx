@@ -14,16 +14,21 @@ import {
 import { HeartDoodle } from "@/components/doodles"
 import { FormChart } from "@/components/dashboard/form-chart"
 import { PageHeader } from "@/components/dashboard/page-header"
+import { RecentActivityLog } from "@/components/dashboard/recent-activity-log"
 import { createClient } from "@/lib/supabase/client"
 import { getErrorMessage } from "@/lib/supabase/errors"
 import { fetchRosterPlayers } from "@/lib/roster/players"
 import type { Player } from "@/components/roster/roster-types"
 import { getBehaviorIcon } from "@/lib/stats/behavior-icons"
 import {
+  deleteStatEntry,
+  fetchPlayerEntryPointsForDate,
   fetchPlayerWeeklyForm,
+  fetchRecentStatEntries,
   fetchScoringBehaviors,
   saveStatEntry,
   type FormChartPoint,
+  type RecentStatEntry,
   type ScoringBehaviorRow,
 } from "@/lib/stats/stat-entries"
 
@@ -57,6 +62,31 @@ export function DailyStatInput() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [weeklyForm, setWeeklyForm] = useState<FormChartPoint[]>(emptyWeek)
+  const [recentEntries, setRecentEntries] = useState<RecentStatEntry[]>([])
+  const [recentTotalCount, setRecentTotalCount] = useState(0)
+  const [isLoadingRecent, setIsLoadingRecent] = useState(true)
+  const [deletingEntryId, setDeletingEntryId] = useState<string | null>(null)
+  const [savedDayPoints, setSavedDayPoints] = useState(0)
+  const [isLoadingDayPoints, setIsLoadingDayPoints] = useState(false)
+
+  const loadSavedDayPoints = useCallback(async (playerId: string, date: string) => {
+    if (!playerId) {
+      setSavedDayPoints(0)
+      return
+    }
+
+    setIsLoadingDayPoints(true)
+
+    try {
+      const supabase = createClient()
+      const points = await fetchPlayerEntryPointsForDate(supabase, playerId, date)
+      setSavedDayPoints(points)
+    } catch {
+      setSavedDayPoints(0)
+    } finally {
+      setIsLoadingDayPoints(false)
+    }
+  }, [])
 
   const loadWeeklyForm = useCallback(async (playerId: string) => {
     if (!playerId) {
@@ -70,6 +100,32 @@ export function DailyStatInput() {
       setWeeklyForm(points)
     } catch {
       setWeeklyForm(emptyWeek)
+    }
+  }, [])
+
+  const loadRecentEntries = useCallback(async () => {
+    setIsLoadingRecent(true)
+
+    try {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        setRecentEntries([])
+        setRecentTotalCount(0)
+        return
+      }
+
+      const { entries, totalCount } = await fetchRecentStatEntries(supabase)
+      setRecentEntries(entries)
+      setRecentTotalCount(totalCount)
+    } catch {
+      setRecentEntries([])
+      setRecentTotalCount(0)
+    } finally {
+      setIsLoadingRecent(false)
     }
   }, [])
 
@@ -96,12 +152,13 @@ export function DailyStatInput() {
       setPlayers(playerRows)
       setBehaviors(behaviorRows)
       setSelectedPlayerId((current) => current || playerRows[0]?.id || "")
+      await loadRecentEntries()
     } catch (err) {
       setError(getErrorMessage(err, "Could not load stat input data."))
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [loadRecentEntries])
 
   useEffect(() => {
     void loadData()
@@ -111,14 +168,23 @@ export function DailyStatInput() {
     void loadWeeklyForm(selectedPlayerId)
   }, [selectedPlayerId, loadWeeklyForm])
 
+  useEffect(() => {
+    void loadSavedDayPoints(selectedPlayerId, entryDate)
+  }, [selectedPlayerId, entryDate, loadSavedDayPoints])
+
   const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
 
-  const pointsImpact = useMemo(() => {
+  const draftPointsImpact = useMemo(() => {
     return selectedBehaviorIds.reduce((sum, id) => {
       const behavior = behaviors.find((b) => b.id === id)
       return sum + (behavior?.points ?? 0)
     }, 0)
   }, [behaviors, selectedBehaviorIds])
+
+  const isDraftingEntry = selectedBehaviorIds.length > 0
+  const displayPoints = isDraftingEntry ? draftPointsImpact : savedDayPoints
+  const pointsImpactLabel =
+    entryDate === todayIsoDate() ? "Today's Points Impact" : "Points Impact"
 
   const toggleBehavior = (behaviorId: string) => {
     setSelectedBehaviorIds((prev) =>
@@ -165,17 +231,41 @@ export function DailyStatInput() {
         entry_date: entryDate,
         notes: notes.trim() || null,
         behavior_ids: selectedBehaviorIds,
-        total_points: pointsImpact,
+        total_points: draftPointsImpact,
       })
 
       setSuccessMessage("Entry saved! Your stats are in the league.")
       setSelectedBehaviorIds([])
       setNotes("")
-      await loadWeeklyForm(selectedPlayerId)
+      await Promise.all([
+        loadWeeklyForm(selectedPlayerId),
+        loadRecentEntries(),
+        loadSavedDayPoints(selectedPlayerId, entryDate),
+      ])
     } catch (err) {
       setError(getErrorMessage(err, "Could not save entry."))
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleDeleteEntry = async (entryId: string) => {
+    setError(null)
+    setDeletingEntryId(entryId)
+
+    try {
+      const supabase = createClient()
+      await deleteStatEntry(supabase, entryId)
+      await Promise.all([
+        loadRecentEntries(),
+        loadWeeklyForm(selectedPlayerId),
+        loadSavedDayPoints(selectedPlayerId, entryDate),
+      ])
+      setSuccessMessage("Entry deleted.")
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not delete entry."))
+    } finally {
+      setDeletingEntryId(null)
     }
   }
 
@@ -269,12 +359,29 @@ export function DailyStatInput() {
           <div className="mt-6 grid gap-6 rounded-xl bg-accent/30 p-5 sm:grid-cols-2">
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Today&apos;s Points Impact
+                {pointsImpactLabel}
               </p>
-              <p className="mt-1 font-serif text-5xl font-bold text-primary">
-                {pointsImpact >= 0 ? "+" : ""}
-                {pointsImpact} <span className="text-lg font-semibold">PTS</span>
-              </p>
+              {isLoadingDayPoints && !isDraftingEntry ? (
+                <p className="mt-1 text-sm text-muted-foreground">Loading...</p>
+              ) : (
+                <>
+                  <p
+                    className={`mt-1 font-serif text-5xl font-bold ${
+                      displayPoints >= 0 ? "text-brand-green" : "text-primary"
+                    }`}
+                  >
+                    {displayPoints >= 0 ? "+" : ""}
+                    {displayPoints} <span className="text-lg font-semibold">PTS</span>
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {isDraftingEntry
+                      ? "Selected behaviours (unsaved)"
+                      : savedDayPoints !== 0
+                        ? "Saved for this date"
+                        : "No entry saved for this date yet"}
+                  </p>
+                </>
+              )}
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -412,6 +519,14 @@ export function DailyStatInput() {
             {isSaving ? "Saving..." : "Save Entry"}
           </Button>
         </div>
+
+        <RecentActivityLog
+          entries={recentEntries}
+          totalCount={recentTotalCount}
+          isLoading={isLoadingRecent}
+          onDelete={handleDeleteEntry}
+          deletingEntryId={deletingEntryId}
+        />
       </section>
     </TooltipProvider>
   )

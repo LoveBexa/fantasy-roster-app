@@ -46,17 +46,21 @@ Women (primarily 25–40) who are actively dating multiple people and want to:
 Scaffold, Supabase project, all core tables, RLS, 40 scoring behaviours seeded.
 
 ### ✅ Phase 4 — Auth
-- Login at `/` — **Google OAuth only** (email/password + Apple UI disabled via `emailPasswordDisabled`)
+- Login at `/login` — **Google OAuth + email/password**
+- Sign up at `/signup` — email/password + optional nickname
+- Forgot / reset password at `/forgot-password`, `/reset-password`
 - OAuth callback: `app/auth/callback/route.ts` → `/dashboard`
 - Clients: `lib/supabase/client.ts`, `lib/supabase/server.ts`
 - Session refresh: `proxy.ts` (Next.js 16)
 
-### ✅ Phase 5–6 — Core app (live data)
+### ✅ Phase 5–6 — Core app + marketing (live data)
+- **`/`** — Marketing homepage (`lib/landing/landing-content.ts`)
 - **`/dashboard`** — League table from Supabase (`lib/league/league-table.ts`)
 - **`/stats`** — Daily stat entry save (`lib/stats/stat-entries.ts`)
-- **`/roster`** — Full roster CRUD (`lib/roster/players.ts`)
-- **`/account`** — Profile, nickname, avatar emoji
+- **`/roster`** — Full roster CRUD via server actions (`app/roster/actions.ts`)
+- **`/account`** — Profile, nickname, avatar emoji in `user_profiles`
 - **`/about`**, **`/how-it-works`** — Marketing pages
+- **Mobile nav** — `AppBottomNav` below `lg`
 
 ### 🔄 Phase 6 — Polish (in progress)
 - Dashboard right rail still mock (MVP cards, awards)
@@ -85,35 +89,48 @@ Set in `.env.local` locally and Vercel project settings for production.
 ```
 fantasy-roster-app/
 ├── app/
-│   ├── auth/callback/route.ts     ← OAuth code exchange
+│   ├── auth/callback/route.ts     ← OAuth / email confirm code exchange
+│   ├── login/page.tsx             ← Login
+│   ├── signup/page.tsx            ← Sign up
+│   ├── forgot-password/page.tsx
+│   ├── reset-password/page.tsx
 │   ├── dashboard/page.tsx         ← League table (live)
 │   ├── (dashboard)/stats/page.tsx ← Daily stats (live)
-│   ├── roster/page.tsx            ← My Roster (live)
+│   ├── roster/
+│   │   ├── page.tsx               ← My Roster (live)
+│   │   └── actions.ts             ← Server actions for CRUD
 │   ├── account/page.tsx           ← Account settings
 │   ├── about/page.tsx             ← Marketing
 │   ├── how-it-works/page.tsx      ← Marketing
 │   ├── layout.tsx
-│   └── page.tsx                   ← Login (/)
+│   └── page.tsx                   ← Marketing homepage (/)
 ├── components/
 │   ├── ui/                        ← shadcn
-│   ├── dashboard/                 ← Sidebar, league table, stat input, etc.
+│   ├── landing/                   ← Homepage sections
+│   ├── dashboard/                 ← Sidebar, bottom nav, league table, stat input
 │   ├── roster/                    ← Roster table, add/edit/delete
 │   ├── account/                   ← Account page content
 │   ├── about/                     ← About page content
 │   ├── how-it-works/              ← How it works content
 │   ├── login-form.tsx
 │   ├── login-hero.tsx
+│   ├── signup-form.tsx
+│   ├── forgot-password-form.tsx
+│   ├── reset-password-form.tsx
+│   ├── hero-sticky-note.tsx
+│   ├── editorial-block.tsx
 │   └── site-navbar.tsx
 ├── lib/
 │   ├── db/columns.ts              ← Table + column name constants
-│   ├── roster/players.ts          ← Roster CRUD
+│   ├── landing/landing-content.ts ← Homepage editable copy
+│   ├── roster/players.ts          ← Roster fetch + helpers
 │   ├── stats/stat-entries.ts      ← Behaviours fetch + stat save
 │   ├── stats/behavior-icons.ts    ← Icon map per behaviour
 │   ├── league/league-table.ts     ← Rankings, form, consistency, snapshots
-│   ├── auth/                      ← user-display, user-profile, logout
+│   ├── auth/                      ← user-display, user-profile, user-profile-db, get-session-user
 │   └── supabase/                  ← client, server, errors
 ├── supabase/
-│   ├── migrations/                ← 001–007 SQL migrations
+│   ├── migrations/                ← 001–009 SQL migrations
 │   └── seed/demo_roster_players.sql
 ├── proxy.ts                       ← Session refresh
 └── .env.local
@@ -129,6 +146,8 @@ fantasy-roster-app/
 | `lib/roster/players.ts` | `fetchRosterPlayers`, create/update/delete |
 | `lib/stats/stat-entries.ts` | `fetchScoringBehaviors`, `saveStatEntry`, form chart |
 | `lib/league/league-table.ts` | `fetchLeagueTable`, `syncLeagueSnapshots` |
+| `lib/auth/get-session-user.ts` | `getSessionUserContext()` — auth user + `user_profiles` row |
+| `lib/auth/user-profile-db.ts` | `saveUserProfile`, `fetchUserProfileRow`, `ensureUserProfileRow` |
 | `lib/supabase/errors.ts` | `toError()`, `getErrorMessage()` — Supabase returns plain objects |
 
 See [`03-database/seed-and-troubleshooting.md`](../03-database/seed-and-troubleshooting.md) if data exists in Supabase but not on localhost.

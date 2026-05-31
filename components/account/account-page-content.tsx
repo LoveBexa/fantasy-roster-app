@@ -225,7 +225,7 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
       <section className="space-y-4">
         <SectionHeading
           title="Connected account"
-          subtitle="You're all signed in and secure."
+          subtitle="You're all signed in and secure. Updating email functionality is coming soon."
         />
 
         <div className="rounded-2xl border border-border bg-card p-5">

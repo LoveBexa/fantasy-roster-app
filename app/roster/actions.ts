@@ -13,7 +13,7 @@ import { toError } from "@/lib/supabase/errors"
 
 function rlsHint(message: string) {
   if (!message.includes("row-level security")) return message
-  return `${message} Try logging out and back in. If it persists, run migration 009 in Supabase.`
+  return `${message} Try logging out and back in. If it persists, run migration 011 in Supabase SQL Editor.`
 }
 
 export async function createRosterPlayerAction(input: PlayerInput) {
@@ -27,7 +27,7 @@ export async function createRosterPlayerAction(input: PlayerInput) {
   }
 
   try {
-    await createRosterPlayer(supabase, user.id, input)
+    await createRosterPlayer(supabase, input)
     revalidatePath("/roster")
     revalidatePath("/dashboard")
     return { success: true as const }

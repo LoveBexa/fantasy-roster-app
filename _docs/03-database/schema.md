@@ -171,6 +171,34 @@ If migration `007` is not applied, snapshots are skipped gracefully (try/catch i
 
 ---
 
+## `user_profiles`
+
+Per-user nickname and avatar emoji. Source of truth for TopBar display name (not Google `full_name`).
+
+```sql
+create table user_profiles (
+  user_id       uuid primary key references auth.users(id) on delete cascade,
+  nickname      text,
+  avatar_emoji  text,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+```
+
+### RLS
+
+Users can select/insert/update their own row (`auth.uid() = user_id`).
+
+### Auto-create on signup
+
+Trigger `on_auth_user_created` on `auth.users` inserts a profile row (nickname from sign-up metadata if provided).
+
+**App code:** `lib/auth/user-profile-db.ts` · `lib/auth/get-session-user.ts`
+
+Requires migration `008_user_profiles.sql`.
+
+---
+
 ## League table calculations (app logic)
 
 Implemented in `lib/league/league-table.ts`:

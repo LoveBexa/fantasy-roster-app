@@ -70,15 +70,34 @@ export async function fetchRosterPlayers(supabase: SupabaseClient) {
 
 export async function createRosterPlayer(
   supabase: SupabaseClient,
-  userId: string,
   player: PlayerInput
-) {
-  const { error } = await supabase.from(TABLES.rosterPlayers).insert({
-    [ROSTER_PLAYERS.userId]: userId,
-    ...playerToRow(player),
-  })
+): Promise<Player> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    throw new Error("Sign in to add players.")
+  }
+
+  const { data, error } = await supabase
+    .from(TABLES.rosterPlayers)
+    .insert({
+      [ROSTER_PLAYERS.userId]: user.id,
+      ...playerToRow(player),
+    })
+    .select("*")
+    .single()
 
   if (error) throw toError(error, "Could not create roster player.")
+  if (!data) {
+    throw new Error(
+      "Player was not saved. Run migration 011_roster_players_rls_complete.sql in Supabase, then try again."
+    )
+  }
+
+  return rowToPlayer(data as RosterPlayerRow)
 }
 
 export async function updateRosterPlayer(

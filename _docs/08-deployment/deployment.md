@@ -180,7 +180,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/?error=auth`)
+  return NextResponse.redirect(`${origin}/login?error=auth`)
 }
 ```
 
@@ -191,9 +191,9 @@ export async function GET(request: NextRequest) {
 ## Local development checklist
 
 1. Copy env vars from Supabase → Project Settings → API into `.env.local`
-2. Run migrations `001`–`007` in SQL Editor (see [`../03-database/schema.md`](../03-database/schema.md))
+2. Run migrations `001`–`009` in SQL Editor (see [`../03-database/schema.md`](../03-database/schema.md))
 3. Configure Google OAuth redirect URLs (below)
-4. `npm run dev` → sign in at `http://localhost:3000`
+4. `npm run dev` → homepage at `http://localhost:3000` · sign in at `/login`
 5. Optional demo data: `supabase/seed/demo_roster_players.sql` (replace user id first)
 
 ### Data visible in Supabase but not in the app?
@@ -236,17 +236,20 @@ Example: `https://cftxmauuchicnmurwxmk.supabase.co/auth/v1/callback`
 **Authentication → URL Configuration**
 - **Site URL** (local): `http://localhost:3000`
 - **Site URL** (prod): `https://your-app.vercel.app`
-- **Redirect URLs**:
+- **Redirect URLs** (add all that apply):
   - `http://localhost:3000/auth/callback`
   - `https://your-app.vercel.app/auth/callback`
 
+Email sign-up and password reset also use `/auth/callback` — ensure the Email provider is enabled under **Authentication → Providers**.
+
 ### Login flow (end-to-end)
 
-1. User clicks **Continue with Google** on `/`
-2. `signInWithOAuth` redirects to Google via Supabase
-3. Google → Supabase → app at `/auth/callback?code=...`
-4. Callback exchanges code, sets session cookies
-5. User lands on `/dashboard`
+1. User clicks **Continue with Google** or submits email/password on `/login`
+2. Google: `signInWithOAuth` → Google via Supabase → `/auth/callback?code=...`
+3. Email/password: `signInWithPassword` → session set in browser
+4. Email sign-up confirm / password reset: email link → `/auth/callback?next=/dashboard` or `/reset-password`
+5. Callback exchanges code, sets session cookies
+6. User lands on `/dashboard`
 
 ---
 
