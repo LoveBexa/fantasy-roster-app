@@ -1,4 +1,4 @@
-import { SiteNavbar } from "@/components/site-navbar"
+import { SiteNavbar, marketingPageMainClass } from "@/components/site-navbar"
 import { EditorialBlock } from "@/components/editorial-block"
 import { ForgotPasswordForm } from "@/components/forgot-password-form"
 
@@ -9,8 +9,8 @@ export const metadata = {
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="min-h-screen bg-background">
-      <SiteNavbar ctaHref="/signup" ctaLabel="JOIN THE LEAGUE" />
+    <main className={marketingPageMainClass}>
+      <SiteNavbar />
 
       <section className="mx-auto flex max-w-md justify-center px-6 py-12 lg:py-16">
         <ForgotPasswordForm />

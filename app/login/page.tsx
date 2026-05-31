@@ -1,4 +1,4 @@
-import { SiteNavbar } from "@/components/site-navbar"
+import { SiteNavbar, marketingPageMainClass } from "@/components/site-navbar"
 import { EditorialBlock } from "@/components/editorial-block"
 import { LoginHero } from "@/components/login-hero"
 import { LoginForm } from "@/components/login-form"
@@ -10,8 +10,8 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen bg-background">
-      <SiteNavbar ctaHref="/login" ctaLabel="JOIN THE LEAGUE" />
+    <main className={marketingPageMainClass}>
+      <SiteNavbar />
 
       <section className="mx-auto grid max-w-7xl items-stretch gap-8 px-6 py-8 lg:grid-cols-2 lg:gap-12">
         <LoginHero />

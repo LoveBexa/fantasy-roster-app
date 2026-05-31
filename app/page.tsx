@@ -1,4 +1,4 @@
-import { SiteNavbar } from "@/components/site-navbar"
+import { SiteNavbar, marketingPageMainClass } from "@/components/site-navbar"
 import { LandingPageContent } from "@/components/landing/landing-page-content"
 
 export const metadata = {
@@ -9,8 +9,8 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background">
-      <SiteNavbar sticky />
+    <main className={marketingPageMainClass}>
+      <SiteNavbar />
       <LandingPageContent />
     </main>
   )

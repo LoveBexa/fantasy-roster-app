@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { SiteNavbar } from "@/components/site-navbar"
+import { SiteNavbar, marketingPageMainClass } from "@/components/site-navbar"
 import { AboutPageContent } from "@/components/about/about-page-content"
 import { EditorialBlock } from "@/components/editorial-block"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className={marketingPageMainClass}>
       <SiteNavbar />
 
       <div className="mx-auto max-w-7xl px-6 py-8">

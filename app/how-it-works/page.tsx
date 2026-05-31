@@ -1,4 +1,4 @@
-import { SiteNavbar } from "@/components/site-navbar"
+import { SiteNavbar, marketingPageMainClass } from "@/components/site-navbar"
 import { HowItWorksContent } from "@/components/how-it-works/how-it-works-content"
 import { EditorialBlock } from "@/components/editorial-block"
 
@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function HowItWorksPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className={marketingPageMainClass}>
       <SiteNavbar />
 
       <div className="mx-auto max-w-7xl px-6 py-8">
