@@ -29,6 +29,7 @@ import {
   FREE_TIER_LIMIT_REACHED_TITLE,
   isRosterLimitReached,
 } from "@/lib/roster/tier-limits"
+import { cn } from "@/lib/utils"
 import { AddPlayerForm } from "./add-player-form"
 import { EditPlayerDialog } from "./edit-player-dialog"
 import { DeletePlayerDialog } from "./delete-player-dialog"
@@ -297,33 +298,35 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
         />
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-card/60 p-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
+      <div className="flex flex-col gap-3 rounded-xl border border-border bg-card/60 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
+        <div className="flex min-w-0 flex-col gap-2 md:flex-row md:items-center md:gap-2">
+          <span className="shrink-0 text-xs font-medium text-muted-foreground md:text-sm">
             FILTER BY STATUS
           </span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-1 md:gap-2">
             {(["All", ...PLAYER_STATUSES] as const).map((status) => (
               <button
                 key={status}
+                type="button"
                 onClick={() => setFilter(status)}
-                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                className={cn(
+                  "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-tight transition-colors sm:text-[11px] md:px-4 md:py-1.5 md:text-sm",
                   filter === status
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-card text-foreground hover:bg-muted"
-                }`}
+                )}
               >
                 {status}
               </button>
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Sort by</span>
+        <div className="flex items-center gap-2 border-t border-border/50 pt-3 md:border-0 md:pt-0">
+          <span className="shrink-0 text-xs text-muted-foreground md:text-sm">Sort by</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground"
+            className="min-w-0 flex-1 rounded-lg border border-border bg-card px-2 py-1 text-xs text-foreground md:flex-none md:px-3 md:py-1.5 md:text-sm"
           >
             <option value="lastUpdated">Last Updated</option>
             <option value="added">Date Added</option>
@@ -333,7 +336,7 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
       </div>
 
       <div className="rounded-xl border border-border bg-card/40">
-        <div className="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_auto] gap-4 border-b border-border px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="hidden grid-cols-[2fr_1fr_2fr_1fr_1fr_auto] gap-4 border-b border-border px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:grid">
           <span>Name</span>
           <span>Status</span>
           <span>Relationship Status</span>
@@ -343,11 +346,11 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
         </div>
 
         {isLoading ? (
-          <p className="px-6 py-10 text-center text-sm text-muted-foreground">
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground md:px-6">
             Loading roster...
           </p>
         ) : playerCount === 0 ? (
-          <div className="space-y-2 px-6 py-10 text-center">
+          <div className="space-y-2 px-4 py-10 text-center md:px-6">
             <p className="text-xs font-medium text-muted-foreground">
               {formatRosterSlotsUsed(0)}
             </p>
@@ -356,107 +359,215 @@ export function RosterTable({ initialShowAddForm = false }: RosterTableProps) {
             </p>
           </div>
         ) : sortedPlayers.length === 0 ? (
-          <p className="px-6 py-10 text-center text-sm text-muted-foreground">
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground md:px-6">
             No players match this filter.
           </p>
         ) : (
           sortedPlayers.map((player) => {
             const relationshipInfo = getRelationshipInfo(player.relationshipStatus)
+            const showStar =
+              player.status === "Active" &&
+              player.relationshipStatus === "Potential Partner"
 
             return (
-              <div
-                key={player.id}
-                className="grid grid-cols-[2fr_1fr_2fr_1fr_1fr_auto] items-center gap-4 border-b border-border/50 px-6 py-4 last:border-0"
-              >
-                <div className="flex items-center gap-3">
-                  {player.photoUrl ? (
-                    <Image
-                      src={player.photoUrl}
-                      alt={player.nickname}
-                      width={48}
-                      height={48}
-                      className="size-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-3xl">{player.emoji}</span>
-                  )}
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-foreground">
-                        {player.nickname}
-                      </span>
-                      {player.status === "Active" &&
-                        player.relationshipStatus === "Potential Partner" && (
-                          <StarDoodle className="size-4 text-amber-500" />
+              <div key={player.id}>
+                <article className="border-b border-border/50 px-4 py-3 last:border-0 md:hidden">
+                  <div className="flex items-start gap-3">
+                    {player.photoUrl ? (
+                      <Image
+                        src={player.photoUrl}
+                        alt={player.nickname}
+                        width={40}
+                        height={40}
+                        className="size-10 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="shrink-0 text-2xl leading-none">{player.emoji}</span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-center gap-1.5">
+                            <span className="truncate font-semibold text-foreground">
+                              {player.nickname}
+                            </span>
+                            {showStar ? (
+                              <StarDoodle className="size-3.5 shrink-0 text-amber-500" />
+                            ) : null}
+                          </div>
+                          {player.description ? (
+                            <p className="line-clamp-2 text-xs text-muted-foreground">
+                              {player.description}
+                            </p>
+                          ) : null}
+                        </div>
+                        <div className="flex shrink-0 gap-0.5">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8"
+                            disabled={isSaving}
+                            onClick={() => setEditingPlayer(player)}
+                            aria-label={`Edit ${player.nickname}`}
+                          >
+                            <Pencil className="size-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8"
+                            disabled={isSaving}
+                            onClick={() => setDeletingPlayer(player)}
+                            aria-label={`Delete ${player.nickname}`}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={cn(
+                            "inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium",
+                            getStatusColor(player.status)
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "size-1 shrink-0 rounded-full",
+                              player.status === "Active"
+                                ? "bg-foreground"
+                                : player.status === "Reserve"
+                                  ? "bg-brand-green"
+                                  : player.status === "Free Agent"
+                                    ? "bg-primary"
+                                    : player.status === "Ghosted"
+                                      ? "bg-muted-foreground"
+                                      : "bg-primary"
+                            )}
+                          />
+                          <span className="truncate">{player.status}</span>
+                        </span>
+                        {relationshipInfo ? (
+                          <span className="inline-flex min-w-0 max-w-full items-center gap-1 text-[11px] text-foreground">
+                            <span className="shrink-0">{relationshipInfo.emoji}</span>
+                            <span className="truncate font-medium">
+                              {relationshipInfo.value}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground">
+                            — {player.status}
+                          </span>
                         )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {player.description}
-                    </p>
-                  </div>
-                </div>
+                      </div>
 
-                <span
-                  className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${getStatusColor(
-                    player.status
-                  )}`}
-                >
-                  <span
-                    className={`size-1.5 rounded-full ${
-                      player.status === "Active"
-                        ? "bg-foreground"
-                        : player.status === "Reserve"
-                          ? "bg-brand-green"
-                          : player.status === "Free Agent"
-                            ? "bg-primary"
-                            : player.status === "Ghosted"
-                              ? "bg-muted-foreground"
-                              : "bg-primary"
-                    }`}
-                  />
-                  {player.status}
-                </span>
-
-                <div>
-                  {relationshipInfo ? (
-                    <div className="flex items-start gap-2">
-                      <span className="text-lg">{relationshipInfo.emoji}</span>
-                      <div>
-                        <p className="font-medium text-foreground">
-                          {relationshipInfo.value}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {relationshipInfo.description}
-                        </p>
+                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                        <span>
+                          Added{" "}
+                          <span className="text-foreground">{player.addedDate}</span>
+                        </span>
+                        <span>
+                          Updated{" "}
+                          <span className="text-foreground">{player.lastUpdated}</span>
+                        </span>
                       </div>
                     </div>
-                  ) : (
-                    <span className="text-muted-foreground">— {player.status}</span>
-                  )}
-                </div>
+                  </div>
+                </article>
 
-                <span className="text-sm text-foreground">{player.addedDate}</span>
-                <span className="text-sm text-foreground">{player.lastUpdated}</span>
+                <div className="hidden grid-cols-[2fr_1fr_2fr_1fr_1fr_auto] items-center gap-4 border-b border-border/50 px-6 py-4 last:border-0 md:grid">
+                  <div className="flex items-center gap-3">
+                    {player.photoUrl ? (
+                      <Image
+                        src={player.photoUrl}
+                        alt={player.nickname}
+                        width={48}
+                        height={48}
+                        className="size-12 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-3xl">{player.emoji}</span>
+                    )}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-foreground">
+                          {player.nickname}
+                        </span>
+                        {showStar ? (
+                          <StarDoodle className="size-4 text-amber-500" />
+                        ) : null}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {player.description}
+                      </p>
+                    </div>
+                  </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={isSaving}
-                    onClick={() => setEditingPlayer(player)}
-                    aria-label={`Edit ${player.nickname}`}
+                  <span
+                    className={cn(
+                      "inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium",
+                      getStatusColor(player.status)
+                    )}
                   >
-                    <Pencil className="size-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={isSaving}
-                    onClick={() => setDeletingPlayer(player)}
-                    aria-label={`Delete ${player.nickname}`}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                    <span
+                      className={cn(
+                        "size-1.5 rounded-full",
+                        player.status === "Active"
+                          ? "bg-foreground"
+                          : player.status === "Reserve"
+                            ? "bg-brand-green"
+                            : player.status === "Free Agent"
+                              ? "bg-primary"
+                              : player.status === "Ghosted"
+                                ? "bg-muted-foreground"
+                                : "bg-primary"
+                      )}
+                    />
+                    {player.status}
+                  </span>
+
+                  <div>
+                    {relationshipInfo ? (
+                      <div className="flex items-start gap-2">
+                        <span className="text-lg">{relationshipInfo.emoji}</span>
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {relationshipInfo.value}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {relationshipInfo.description}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">— {player.status}</span>
+                    )}
+                  </div>
+
+                  <span className="text-sm text-foreground">{player.addedDate}</span>
+                  <span className="text-sm text-foreground">{player.lastUpdated}</span>
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={isSaving}
+                      onClick={() => setEditingPlayer(player)}
+                      aria-label={`Edit ${player.nickname}`}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={isSaving}
+                      onClick={() => setDeletingPlayer(player)}
+                      aria-label={`Delete ${player.nickname}`}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             )
