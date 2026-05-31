@@ -121,10 +121,15 @@ export function HowItWorksContent() {
         <div className="grid lg:grid-cols-2">
           <div className="flex flex-col justify-center px-8 py-10 lg:px-10">
             <p className="font-serif text-2xl font-bold leading-snug text-foreground">
-              The Roster is your dating fantasy league.
+              The Roster is your Dating-esque Fantasy League.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              You draft. You track. You score points. You rank your roster. It&apos;s
+            A dating roster (or "roster dating") is the modern practice of actively dating multiple people at the same time. Instead of putting all your "eggs in one basket" and focusing on a single person right away,
+             you keep a casual rotation of suitors while you figure out who is the best long term match
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            This tool will help you draft. Help you track. And let your rosters score points. It will rank your roster in order to help you find your highest performer. 
+            It&apos;s
               strategic dating that's backed by data, not drama.
             </p>
 
@@ -138,12 +143,14 @@ export function HowItWorksContent() {
               </div>
             </div>
 
-            <Button
-              asChild
-              className="mt-6 w-fit rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-            >
-              <Link href="/signup">Sign up free</Link>
-            </Button>
+            <div className="mt-6">
+              <Button
+                asChild
+                className="h-12 rounded-full bg-primary px-8 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
+              >
+                <Link href="/signup">Sign up free</Link>
+              </Button>
+            </div>
           </div>
 
           <div className="relative min-h-72 bg-accent/40 lg:min-h-full">

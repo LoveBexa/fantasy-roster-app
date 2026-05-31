@@ -1,3 +1,4 @@
+import Link from "next/link"
 import {
   BarChart3,
   Check,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { StarDoodle } from "@/components/doodles"
+import { Button } from "@/components/ui/button"
 
 const pillars = [
   {
@@ -71,20 +73,29 @@ export function AboutPageContent() {
         <div className="grid lg:grid-cols-2">
           <div
             id="why-heading"
-            className="flex flex-col justify-center px-8 py-10 text-center lg:px-10 lg:text-left"
+            className="flex flex-col justify-center px-8 py-10 lg:px-10"
           >
-            <h2 className="text-sm font-bold uppercase tracking-wide text-primary">
+            <p className="font-serif text-2xl font-bold leading-snug text-foreground">
               Why We Built This
-            </h2>
+            </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Dating shouldn&apos;t feel like guesswork. The Roster [Fantasy League] turns your love life
-              into a league you can actually read — with stats, patterns, and clarity instead
+              Dating shouldn&apos;t feel like guesswork. Why sit in ambiguity when you can take action? The Roster [Fantasy League] turns your love life
+              into a league you can actually use to make decisions. Log stats, check patterns, and gain clarity instead
               of confusion.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               We built this for women who want to date smarter, not harder. Track effort.
               Spot inconsistency. Make decisions based on data, not drama.
             </p>
+
+            <div className="mt-6">
+              <Button
+                asChild
+                className="h-12 rounded-full bg-primary px-8 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
+              >
+                <Link href="/signup">Sign up free</Link>
+              </Button>
+            </div>
           </div>
 
           <div className="relative aspect-[700/520] w-full overflow-hidden bg-accent/40">
