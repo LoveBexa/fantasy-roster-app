@@ -73,8 +73,8 @@ export function SignupForm() {
       options: {
         data: trimmedNickname ? { nickname: trimmedNickname } : undefined,
         emailRedirectTo: getAuthCallbackUrl(
-          window.location.origin,
-          DEFAULT_POST_AUTH_PATH
+          DEFAULT_POST_AUTH_PATH,
+          window.location.origin
         ),
       },
     })

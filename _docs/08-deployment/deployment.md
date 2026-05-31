@@ -234,6 +234,7 @@ Example: `https://cftxmauuchicnmurwxmk.supabase.co/auth/v1/callback`
 - Paste Google Client ID and Client Secret
 
 **Authentication → URL Configuration**
+- **Site URL** (production): your Vercel URL, e.g. `https://your-app.vercel.app` — **not** `http://localhost:3000` (if Site URL is localhost, Google OAuth on Vercel will redirect users to localhost)
 - **Site URL** (local): `http://localhost:3000`
 - **Site URL** (prod): `https://your-app.vercel.app`
 - **Redirect URLs** (add all that apply):

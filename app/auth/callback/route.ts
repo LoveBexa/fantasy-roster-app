@@ -1,18 +1,22 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
-import { sanitizeAuthNextPath } from "@/lib/auth/callback-url"
+import { getSiteOrigin, sanitizeAuthNextPath } from "@/lib/auth/callback-url"
 
 function getRedirectOrigin(request: NextRequest) {
-  const { origin } = new URL(request.url)
-  const forwardedHost = request.headers.get("x-forwarded-host")
-  const isLocalEnv = process.env.NODE_ENV === "development"
+  const configured = getSiteOrigin()
+  if (configured) return configured
 
-  if (isLocalEnv || !forwardedHost) {
-    return origin
+  const forwardedHost = request.headers.get("x-forwarded-host")
+  const host = forwardedHost ?? request.headers.get("host")
+
+  if (host) {
+    const protocol =
+      request.headers.get("x-forwarded-proto") ??
+      (host.startsWith("localhost") ? "http" : "https")
+    return `${protocol}://${host}`
   }
 
-  const protocol = request.headers.get("x-forwarded-proto") ?? "https"
-  return `${protocol}://${forwardedHost}`
+  return new URL(request.url).origin
 }
 
 export async function GET(request: NextRequest) {
