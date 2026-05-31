@@ -35,21 +35,34 @@ function LeagueFormArrows({ form }: { form: LeagueTableRow["form"] }) {
   )
 }
 
-function ConsistencyPill({ consistency }: { consistency: number }) {
-  const isHigh = consistency >= 50
+function consistencyValueColor(consistency: number) {
+  return consistency >= 50 ? "text-brand-green" : "text-primary"
+}
 
+function ConsistencyPill({ consistency }: { consistency: number }) {
   return (
     <span
       className={cn(
         "inline-flex items-center whitespace-nowrap rounded-full border border-border bg-card font-semibold text-muted-foreground",
-        "px-2.5 py-0.5 text-[10px] md:px-3 md:py-1 md:text-sm"
+        "px-2.5 py-0.5 text-[10px]"
       )}
     >
-      Consistency: {" "}
-      <span className={isHigh ? "text-brand-green" : "text-primary"}>
-        {consistency}%
-      </span>
+      Consistency:{" "}
+      <span className={consistencyValueColor(consistency)}>{consistency}%</span>
     </span>
+  )
+}
+
+function ConsistencyStat({ consistency }: { consistency: number }) {
+  return (
+    <p
+      className={cn(
+        "font-serif text-2xl font-bold",
+        consistencyValueColor(consistency)
+      )}
+    >
+      {consistency}%
+    </p>
   )
 }
 
@@ -179,7 +192,7 @@ export function LeagueTable() {
                   </p>
 
                   <div className="shrink-0 text-right">
-                    <p className="font-serif text-xl font-bold leading-none text-primary">
+                    <p className="font-serif text-xl font-bold leading-none text-foreground">
                       {player.points}
                     </p>
                     {player.delta !== 0 ? (
@@ -236,7 +249,7 @@ export function LeagueTable() {
                 </div>
 
                 <div className="text-center">
-                  <p className="font-serif text-2xl font-bold text-primary">{player.points}</p>
+                  <p className="font-serif text-2xl font-bold text-foreground">{player.points}</p>
                   {player.delta !== 0 ? (
                     <p
                       className={cn(
@@ -253,8 +266,8 @@ export function LeagueTable() {
                   <LeagueFormArrows form={player.form} />
                 </div>
 
-                <div className="flex justify-center">
-                  <ConsistencyPill consistency={player.consistency} />
+                <div className="text-center">
+                  <ConsistencyStat consistency={player.consistency} />
                 </div>
               </div>
             </div>
