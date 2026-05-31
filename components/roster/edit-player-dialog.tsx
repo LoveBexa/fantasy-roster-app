@@ -70,21 +70,23 @@ export function EditPlayerDialog({
               <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Emoji
               </label>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {EMOJI_OPTIONS.slice(0, 10).map((e) => (
-                  <button
-                    key={e}
-                    type="button"
-                    onClick={() => setEmoji(e)}
-                    className={`flex size-9 items-center justify-center rounded border text-xl ${
-                      emoji === e
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-card"
-                    }`}
-                  >
-                    {e}
-                  </button>
-                ))}
+              <div className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-border bg-background/50 p-2">
+                <div className="flex flex-wrap gap-1">
+                  {EMOJI_OPTIONS.map((e) => (
+                    <button
+                      key={e}
+                      type="button"
+                      onClick={() => setEmoji(e)}
+                      className={`flex size-9 items-center justify-center rounded border text-xl ${
+                        emoji === e
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-card hover:bg-muted"
+                      }`}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex-1">

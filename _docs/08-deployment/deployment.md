@@ -188,6 +188,33 @@ export async function GET(request: NextRequest) {
 
 ---
 
+## Local development checklist
+
+1. Copy env vars from Supabase → Project Settings → API into `.env.local`
+2. Run migrations `001`–`007` in SQL Editor (see [`../03-database/schema.md`](../03-database/schema.md))
+3. Configure Google OAuth redirect URLs (below)
+4. `npm run dev` → sign in at `http://localhost:3000`
+5. Optional demo data: `supabase/seed/demo_roster_players.sql` (replace user id first)
+
+### Data visible in Supabase but not in the app?
+
+The Table Editor bypasses RLS. The app only shows rows where `user_id = auth.uid()`.
+
+See [`../03-database/seed-and-troubleshooting.md`](../03-database/seed-and-troubleshooting.md) for:
+- Comparing `auth.users.id` vs `roster_players.user_id`
+- Fixing mismatched user ids after seed SQL
+- Confirming `.env.local` points at the same Supabase project
+
+Quick check:
+
+```sql
+select id, email from auth.users where email = 'your@gmail.com';
+```
+
+That `id` must match every `user_id` on your roster rows.
+
+---
+
 ## Google OAuth — External Configuration
 
 ### Google Cloud Console

@@ -1,121 +1,144 @@
 # 04 — Features Specification
 
-## MVP Features (Phases 1–7)
+## MVP Features
 
 ### Authentication
 
 | Capability | Status | Notes |
 |------------|--------|-------|
-| Google OAuth | ✅ Implemented | `components/login-form.tsx` → Supabase → `/auth/callback` → `/dashboard` |
-| Email/password login | 🔲 UI only | Form renders; submit not wired to `signInWithPassword` |
-| Apple OAuth | 🔲 UI only | Button present; not wired |
-| Sign up page | ⏳ Not built | Planned at `app/(auth)/signup` |
-| Forgot password | 🔲 UI only | Link placeholder |
+| Google OAuth | ✅ Implemented | `components/login-form.tsx` → `/auth/callback` → `/dashboard` |
+| Email/password login | 🔲 Disabled | UI visible; `emailPasswordDisabled = true` — fields non-functional |
+| Apple OAuth | 🔲 Disabled | Button visible; not wired |
+| Sign up page | ⏳ Not built | Login page links placeholder |
 | OAuth callback | ✅ Implemented | `app/auth/callback/route.ts` |
-| Session refresh | ✅ Implemented | `proxy.ts` refreshes tokens via `getUser()` |
-| Protected routes | ⏳ Not built | Proxy does not yet redirect unauthenticated users away from `/dashboard` |
+| Session refresh | ✅ Implemented | `proxy.ts` via `getUser()` |
+| Protected routes | ⏳ Not enforced | Unauthenticated users can hit `/dashboard` URLs; data empty without session |
+| Logout | ✅ Implemented | `lib/auth/use-logout.ts` — sidebar + account |
 
-**Google OAuth setup (external):**
-1. Google Cloud → OAuth client redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`
-2. Supabase → Auth → Providers → Google (Client ID + Secret)
-3. Supabase → URL Configuration → redirect URL: `http://localhost:3000/auth/callback` (+ production URL when deployed)
+**Google OAuth setup:** See [`08-deployment/deployment.md`](../08-deployment/deployment.md).
 
-**Do not** put Google Client Secret in `.env.local` — only Supabase URL + anon key belong in the app.
+---
 
-### ✅ Roster Management
-- Add a dating prospect (nickname + optional photo + status)
-- Edit nickname, photo, status
-- Delete player (soft delete or hard delete)
-- Player statuses: Active / Bench / Injured / Ghosted / Free Agent
+### ✅ Roster Management (`/roster`)
 
-### ✅ Daily Stat Entry
-- Select a player
-- Pick a date (defaults to today)
-- Choose behaviours from the 40-behaviour grid
-- Add optional notes (250 chars)
-- Save → points computed and stored
-- Edit existing entry (upsert logic)
+| Capability | Status |
+|------------|--------|
+| List players | ✅ Live from Supabase |
+| Add player | ✅ Nickname, emoji, description, status, relationship, notes |
+| Edit player | ✅ Dialog with full emoji picker |
+| Delete player | ✅ Confirmation dialog |
+| Filter by status | ✅ All / Active / Reserve / etc. |
+| Sort | ✅ Last updated, added, nickname |
+| Photo upload | ⏳ Column exists; UI not wired |
 
-### ✅ League Table
-- Ranked list of all roster players by total points
-- Time filters: Overall / This Season / This Month / This Week
-- Form arrows (last 3 entries trend)
-- Consistency % meter
-- MVP of the Week highlight card
-- Most Improved highlight card
-- Red Flag Alert highlight card
-- Consistency King highlight card
-- Love Bomb Index card
-- Stats at a Glance summary strip
-- Starting Lineup / Bench / Injured / Ghosted sections
+**Data:** `lib/roster/players.ts` · UI: `components/roster/roster-table.tsx`
 
-### ✅ Scoring System Reference
-- Full 40-behaviour list
-- Grouped by category
-- Point values visible
-- Descriptions on hover/tap
+**Player fields:** nickname, emoji (~150 options), description, status, relationship status, notes (250 chars).
 
-### ✅ History
-- Chronological log of all entries
-- Filter by player or date range
+---
+
+### ✅ Daily Stat Entry (`/stats`)
+
+| Capability | Status |
+|------------|--------|
+| Player dropdown | ✅ From roster |
+| Date picker | ✅ Defaults to today |
+| Behaviour grid | ✅ All 40 behaviours; icons via `behavior-icons.ts` |
+| Live points total | ✅ Sums selected behaviour points |
+| Form chart | ✅ Last 7 days per selected player |
+| Save entry | ✅ Inserts `stat_entries` + `stat_entry_behaviors` |
+| Edit same-day entry | ⏳ Not built — duplicate day throws unique constraint error |
+| Notes | ✅ Optional, 250 chars |
+
+**Data:** `lib/stats/stat-entries.ts` · UI: `components/dashboard/daily-stat-input.tsx`
+
+---
+
+### ✅ League Table (`/dashboard`)
+
+| Capability | Status |
+|------------|--------|
+| Ranked players by points | ✅ Live |
+| Period tabs | ✅ Overall / This Season / This Month / This Week |
+| Points delta | ✅ Diff between last two entries in period |
+| Form arrows | ✅ Rank change day-to-day (up to 3) |
+| Consistency % | ✅ From behaviour points last 30 days |
+| Daily snapshots | ✅ Upsert on load + after stat save (needs migration 007) |
+| Empty state | ✅ CTA to add players / log stats |
+| MVP / awards sidebar | 🔲 Mock data in `RightRail` |
+
+**Data:** `lib/league/league-table.ts` · UI: `components/dashboard/league-table.tsx`
+
+---
+
+### ✅ Account (`/account`)
+
+| Capability | Status |
+|------------|--------|
+| View email / Google connection | ✅ |
+| Edit nickname | ✅ Saved to `user_metadata.nickname` |
+| Avatar emoji picker | ✅ Saved to `user_metadata.avatar_emoji` |
+| Delete account | 🔲 Placeholder action — emails support |
+
+---
+
+### ✅ Marketing pages
+
+| Page | Route | Status |
+|------|-------|--------|
+| About | `/about` | ✅ `components/about/about-page-content.tsx` |
+| How it works | `/how-it-works` | ✅ `components/how-it-works/how-it-works-content.tsx` |
+| Site nav links | `SiteNavbar` | ✅ ABOUT · HOW IT WORKS |
+
+---
+
+### ⏳ Not built yet
+
+- Scoring system reference page (`/scoring`)
+- History timeline (`/history`)
+- Awards page (`/awards`)
+- Insights / analytics
+- Chat analyser
+- Custom behaviours
+- Player photo upload to Storage
+- Route protection redirects in `proxy.ts`
+- Stat entry upsert / edit flow
 
 ---
 
 ## Post-MVP Features (Backlog)
 
 ### 🔮 Insights / Analytics
-- Trend charts per player over time
-- Category breakdown (are they bad at Communication vs. Effort?)
-- Best/worst day of the week patterns
+Trend charts, category breakdown, day-of-week patterns.
 
 ### 🔮 Chat Analyser
-- Paste a WhatsApp conversation export
-- AI (Claude API) extracts behaviours and suggests stat entry
-- "We detected 3 positive and 1 negative behaviour — want to log them?"
+Paste WhatsApp export → AI suggests stat entry.
 
 ### 🔮 Awards System
-- Season-end awards (Most Consistent, Biggest Glow-Up, Most Ghosted, etc.)
-- Badge collection visible on profile
+Season-end badges (Most Consistent, Biggest Glow-Up, etc.).
 
 ### 🔮 Attachment Tracker
-- Slider: track your own emotional investment level per player
-- Warns when your investment is higher than their points score
-
-### 🔮 Date Timeline
-- Visual timeline of dates / interactions per player
-- Photo moments, venue tags
+Track your emotional investment vs their points score.
 
 ### 🔮 Notifications
-- Weekly recap push notification
-- "You haven't logged [Player] in 3 days"
-- Red flag alert notification
+Weekly recap, “haven't logged in 3 days”, red flag alerts.
 
 ### 🔮 Custom Behaviours
-- Add your own behaviour with custom point value
-- Available only to you
+User-defined behaviour + point value.
 
 ### 🔮 Social / Sharing
-- Share anonymous league table screenshot
-- Export a "Dating Season Wrapped" graphic
+Anonymous league screenshot, “Dating Season Wrapped” export.
 
 ### 🔮 Mobile App
-- React Native / Expo version
-- Matches the mobile mockups exactly
-- Push notifications
+React Native / Expo with push notifications.
 
 ---
 
-## Feature Flags
+## Known issues / limitations
 
-For toggling post-MVP features in development:
-
-```typescript
-// lib/features.ts
-export const FEATURES = {
-  CHAT_ANALYSER: false,
-  CUSTOM_BEHAVIORS: false,
-  ATTACHMENT_TRACKER: false,
-  AWARDS: false,
-  INSIGHTS: true,  // enable when Insights page is built
-} as const
-```
+| Issue | Workaround |
+|-------|------------|
+| Data in Supabase but empty on localhost | See [`03-database/seed-and-troubleshooting.md`](../03-database/seed-and-troubleshooting.md) |
+| Second save same player same day fails | Delete entry in Supabase or pick different date |
+| Snapshots / form arrows missing | Run migration `007_league_player_snapshots.sql` |
+| `permission denied for table` | Run migration `005_table_grants.sql` |

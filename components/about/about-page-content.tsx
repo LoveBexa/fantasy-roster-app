@@ -68,7 +68,7 @@ export function AboutPageContent() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 lg:items-stretch">
+        <div className="grid lg:grid-cols-2">
           <div
             id="why-heading"
             className="flex flex-col justify-center px-8 py-10 text-center lg:px-10 lg:text-left"
@@ -87,12 +87,12 @@ export function AboutPageContent() {
             </p>
           </div>
 
-          <div className="relative min-h-72 w-full lg:min-h-[28rem]">
+          <div className="relative aspect-[700/520] w-full overflow-hidden bg-accent/40">
             <Image
               src="/images/four-women.png"
               alt="Four confident women posing together"
               fill
-              className="object-cover"
+              className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>

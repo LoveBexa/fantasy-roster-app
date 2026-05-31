@@ -2,7 +2,7 @@
 
 > Track the patterns. Protect your energy. Win the league.
 
-This folder is the **single source of truth** for product, design, and engineering decisions on **Level Up Roster**.
+This folder is the **single source of truth** for product, design, and engineering decisions on **Level Up Roster** (branded in-app as **The Roster**).
 
 For a GitHub-facing overview and local setup, see the [root README](../README.md).
 
@@ -16,9 +16,9 @@ For a GitHub-facing overview and local setup, see the [root README](../README.md
 
 ### Core loop
 
-1. **Add players** to your roster (nickname, photo, status)
-2. **Log behaviours** after dates or interactions (+3 to +15, or −4 to −20 per behaviour)
-3. **Review rankings** — totals, form trends, MVP / red-flag highlights
+1. **Add players** to your roster (nickname, emoji, status, relationship type)
+2. **Log behaviours** after dates or interactions (points per behaviour from the seed table)
+3. **Review rankings** — totals, form trends, consistency %
 4. **Decide with data** — where to invest energy, who to bench, who to cut
 
 ### Who it's for
@@ -31,10 +31,12 @@ Women (primarily 25–40) actively dating who want to spot patterns early, reduc
 |-----------|------------|
 | Vision, phases, folder structure | [`01-overview/project-overview.md`](./01-overview/project-overview.md) |
 | Colours, typography, tokens | [`02-design/design-system.md`](./02-design/design-system.md) |
-| Tables, RLS, SQL | [`03-database/schema.md`](./03-database/schema.md) |
+| Tables, RLS, SQL, migrations | [`03-database/schema.md`](./03-database/schema.md) |
+| Demo seed data + empty-app troubleshooting | [`03-database/seed-and-troubleshooting.md`](./03-database/seed-and-troubleshooting.md) |
 | Feature list + auth status | [`04-features/features.md`](./04-features/features.md) |
 | All 40 behaviours + points | [`05-scoring/behaviours-seed.md`](./05-scoring/behaviours-seed.md) |
 | Page layouts + routes | [`06-pages/page-specs.md`](./06-pages/page-specs.md) |
+| League table logic + UI | [`06-pages/league-table.md`](./06-pages/league-table.md) |
 | Component file paths | [`07-components/components-reference.md`](./07-components/components-reference.md) |
 | Env vars, OAuth, deploy | [`08-deployment/deployment.md`](./08-deployment/deployment.md) |
 
@@ -46,7 +48,7 @@ Women (primarily 25–40) actively dating who want to spot patterns early, reduc
 |--------|----------|
 | [`01-overview/`](./01-overview/) | Project vision, tech stack, build phases |
 | [`02-design/`](./02-design/) | Brand identity, colours, typography, design tokens |
-| [`03-database/`](./03-database/) | Supabase schema, RLS policies, SQL reference |
+| [`03-database/`](./03-database/) | Supabase schema, RLS, migrations, seed SQL |
 | [`04-features/`](./04-features/) | Feature specs for every app feature |
 | [`05-scoring/`](./05-scoring/) | Full trait/behaviour scoring system (all 40 behaviours) |
 | [`06-pages/`](./06-pages/) | Page-by-page specs and data requirements |
@@ -57,30 +59,49 @@ Women (primarily 25–40) actively dating who want to spot patterns early, reduc
 
 ## 🚀 Current status
 
-- **Phase 5–6 — Dashboard & League Table UI** (in progress)
-- **Done**: Scaffold, Supabase schema, Google OAuth login, dashboard UI shell
-- **In repo**: Login (`/`), dashboard (`/dashboard`), `lib/supabase/`, `app/auth/callback/`, `proxy.ts`
-- **Next**: Wire dashboard to live data → route protection → email/Apple auth → deploy (Phase 7)
+- **Phase 6 — Live data** (mostly complete)
+- **Done**: Google OAuth, roster CRUD, daily stats save, league table from Supabase, account page, marketing pages (`/about`, `/how-it-works`)
+- **Partial**: Right rail on dashboard still mock data; route protection not enforced in `proxy.ts`
+- **Known gaps**: Duplicate stat entry same day errors (insert-only, no upsert); email/Apple auth UI disabled
 
-Key routes today:
+### Key routes
 
-| Route | File | Notes |
-|-------|------|-------|
-| `/` | `app/page.tsx` | Login; Google OAuth live |
-| `/dashboard` | `app/dashboard/page.tsx` | Stat input + league table (mock data) |
-| `/auth/callback` | `app/auth/callback/route.ts` | OAuth → session → redirect `/dashboard` |
+| Route | File | Status |
+|-------|------|--------|
+| `/` | `app/page.tsx` | Login — Google OAuth live; email/password disabled |
+| `/dashboard` | `app/dashboard/page.tsx` | League table — **live Supabase data** |
+| `/stats` | `app/(dashboard)/stats/page.tsx` | Daily stat input — **live save** |
+| `/roster` | `app/roster/page.tsx` | My Roster — **live CRUD** |
+| `/account` | `app/account/page.tsx` | Profile, nickname, emoji, logout |
+| `/about` | `app/about/page.tsx` | Marketing |
+| `/how-it-works` | `app/how-it-works/page.tsx` | Marketing |
+| `/auth/callback` | `app/auth/callback/route.ts` | OAuth → session → `/dashboard` |
+
+### Supabase migrations (run in order in SQL Editor)
+
+| File | Purpose |
+|------|---------|
+| `001_roster_players.sql` | Roster table + RLS |
+| `002_stat_entries.sql` | Stat entries + junction table |
+| `003_scoring_behaviors.sql` | Behaviours table + 40-row seed |
+| `004_roster_players_columns.sql` | Adds emoji, description, etc. on legacy tables |
+| `005_table_grants.sql` | Fixes “permission denied for table …” |
+| `006_scoring_behaviors_columns.sql` | Adds description, created_at |
+| `007_league_player_snapshots.sql` | Daily rank snapshots for form arrows |
+
+Demo data (optional): `supabase/seed/demo_roster_players.sql` — see [`03-database/seed-and-troubleshooting.md`](./03-database/seed-and-troubleshooting.md).
 
 ---
 
 ## ⚡ Quick reference
 
 - **Framework**: Next.js 16 (App Router) + TypeScript + Tailwind
-- **Backend**: Supabase (Postgres + Auth + Storage)
+- **Backend**: Supabase (Postgres + Auth)
 - **UI Library**: shadcn/ui
 - **Deployment**: Vercel
-- **Primary colour**: Crimson `#8B1A1A`
-- **Background**: Cream `#FAF6F1`
-- **Accent**: Olive `#5C6B3A`
+- **Primary colour**: Burgundy / crimson (`--primary` in `app/globals.css`)
+- **Column constants**: `lib/db/columns.ts` (American spelling per schema)
+- **Data layer**: `lib/roster/`, `lib/stats/`, `lib/league/`
 
 ---
 
@@ -88,5 +109,3 @@ Key routes today:
 
 - Supabase Dashboard: `https://supabase.com/dashboard`
 - Vercel Dashboard: `https://vercel.com/dashboard`
-- v0 (UI generation): `https://v0.dev`
-- Cursor AI: `https://cursor.com`

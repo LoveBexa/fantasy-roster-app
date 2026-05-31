@@ -30,15 +30,25 @@ export function TopBar({ user }: TopBarProps) {
   const greeting = user ? `Hi, ${user.firstName}` : "Hi there"
 
   return (
-    <header className="flex items-center justify-between gap-4 border-b border-border bg-card/40 px-8 py-4">
-      <div className="relative w-full max-w-sm">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="search"
-          placeholder="Search people..."
-          aria-label="Search people"
-          className="h-10 w-full rounded-full border border-border bg-card pl-9 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
-        />
+    <header className="flex items-center justify-between gap-3 border-b border-border bg-card/40 px-4 py-3 md:gap-4 md:px-8 md:py-4">
+      <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-4">
+        <div className="min-w-0 lg:hidden">
+          <p className="truncate font-serif text-lg font-bold leading-tight text-primary">
+            THE ROSTER
+          </p>
+          <p className="truncate text-[0.6rem] font-semibold tracking-[0.35em] text-primary/50">
+            FANTASY LEAGUE
+          </p>
+        </div>
+        <div className="relative hidden w-full max-w-sm lg:block">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            placeholder="Search people..."
+            aria-label="Search people"
+            className="h-10 w-full rounded-full border border-border bg-card pl-9 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
+          />
+        </div>
       </div>
 
       <DropdownMenu>
@@ -61,7 +71,7 @@ export function TopBar({ user }: TopBarProps) {
                 {user?.avatarEmoji ?? (user ? getInitials(user.name) : "?")}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-semibold text-foreground">{greeting}</span>
+            <span className="hidden text-sm font-semibold text-foreground sm:inline">{greeting}</span>
             <ChevronDown className="size-4 text-muted-foreground" />
           </button>
         </DropdownMenuTrigger>

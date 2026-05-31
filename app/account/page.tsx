@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { DashboardMain } from "@/components/dashboard/dashboard-main"
-import { TopBar } from "@/components/dashboard/top-bar"
+import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { AccountPageContent } from "@/components/account/account-page-content"
 import { createClient } from "@/lib/supabase/server"
@@ -31,20 +30,12 @@ export default async function AccountPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <AppSidebar activePage="Account" />
+    <DashboardShell activePage="Account" user={userDisplay}>
+      <DashboardMain>
+        <AccountPageContent initialProfile={profile} />
+      </DashboardMain>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar user={userDisplay} />
-
-        <div className="flex min-w-0 flex-1">
-          <DashboardMain>
-            <AccountPageContent initialProfile={profile} />
-          </DashboardMain>
-
-          <RightRail />
-        </div>
-      </div>
-    </div>
+      <RightRail />
+    </DashboardShell>
   )
 }

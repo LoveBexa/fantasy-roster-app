@@ -37,8 +37,8 @@ export function LoginForm() {
     <div className="relative mx-auto w-full max-w-md py-4">
       <StarDoodle className="absolute -top-2 right-0 size-12 text-muted-foreground/50" />
 
-      <h1 className="font-serif text-4xl font-bold tracking-tight text-foreground text-balance">
-        Welcome back, Roster Boss.
+      <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground text-balance">
+        Welcome back, Roster Queen.
       </h1>
       <p className="mt-2 font-script text-2xl text-primary">
         Log in to check your league.

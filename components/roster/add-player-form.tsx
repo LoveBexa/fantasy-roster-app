@@ -121,28 +121,24 @@ export function AddPlayerForm({ onAdd, onCancel, isSubmitting = false }: AddPlay
         <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Choose an Emoji
         </label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {EMOJI_OPTIONS.map((e) => (
-            <button
-              key={e}
-              type="button"
-              onClick={() => setEmoji(e)}
-              className={`flex size-12 items-center justify-center rounded-lg border text-2xl transition-colors ${
-                emoji === e
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-card hover:bg-muted"
-              }`}
-            >
-              {e}
-            </button>
-          ))}
+        <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-border bg-background/50 p-3">
+          <div className="flex flex-wrap gap-2">
+            {EMOJI_OPTIONS.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => setEmoji(e)}
+                className={`flex size-12 items-center justify-center rounded-lg border text-2xl transition-colors ${
+                  emoji === e
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-card hover:bg-muted"
+                }`}
+              >
+                {e}
+              </button>
+            ))}
+          </div>
         </div>
-        <button
-          type="button"
-          className="mt-2 text-sm text-primary hover:underline"
-        >
-          More emojis →
-        </button>
       </div>
 
       {/* Description */}

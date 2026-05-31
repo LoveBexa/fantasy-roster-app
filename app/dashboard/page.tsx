@@ -1,6 +1,5 @@
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { DashboardMain } from "@/components/dashboard/dashboard-main"
-import { TopBar } from "@/components/dashboard/top-bar"
+import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { LeagueTable } from "@/components/dashboard/league-table"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { createClient } from "@/lib/supabase/server"
@@ -14,20 +13,12 @@ export default async function DashboardPage() {
   const userDisplay = getUserDisplay(user)
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <AppSidebar activePage="League Table" />
+    <DashboardShell activePage="League Table" user={userDisplay}>
+      <DashboardMain>
+        <LeagueTable />
+      </DashboardMain>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar user={userDisplay} />
-
-        <div className="flex min-w-0 flex-1">
-          <DashboardMain>
-            <LeagueTable />
-          </DashboardMain>
-
-          <RightRail />
-        </div>
-      </div>
-    </div>
+      <RightRail />
+    </DashboardShell>
   )
 }

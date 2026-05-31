@@ -1,230 +1,160 @@
 # 06 — Page Specifications
 
-> **Routing note:** The login page currently lives at **`/`** (`app/page.tsx`), not `app/(auth)/login`. The main authenticated shell is **`/dashboard`** (`app/dashboard/page.tsx`). Separate dashboard sub-routes (`/roster`, `/daily-stats`, etc.) are planned but not built yet.
+> **Routing:** Login is **`/`** (`app/page.tsx`). Authenticated app uses `/dashboard`, `/stats`, `/roster`, `/account`. Marketing: `/about`, `/how-it-works`.
 
 ---
 
-## Auth Pages
+## Public pages
 
-### Login — `app/page.tsx` *(implemented — route `/`)*
+### Login — `app/page.tsx` *(route `/`)*
 
-**Status**: ✅ UI complete · ✅ Google OAuth wired · 🔲 email/password · 🔲 Apple
+**Status**: ✅ Google OAuth · 🔲 email/password disabled · 🔲 Apple disabled
 
-**Design**: Split screen — left hero panel, right form panel  
-**Left panel** (`LoginHero`): Olive green background, handwritten taglines, circle badge  
-**Right panel** (`LoginForm`):
-- Heading: "Welcome back, Roster Manager."
-- Subheading (crimson italic): "Log in to check your league."
-- Email + Password fields
-- "Forgot your password?" link (placeholder)
-- Primary CTA: `LOG IN` button (not wired to Supabase yet)
-- Divider: "or"
-- **Google OAuth button** — calls `supabase.auth.signInWithOAuth({ provider: "google", redirectTo: "/auth/callback" })`
-- Apple OAuth button (UI only)
-- Footer: "Don't have an account? Sign up →" (placeholder link)
+**Layout**: Split — `LoginHero` (left) + `LoginForm` (right) · `SiteNavbar` above
 
-**Data**: No server fetch. Google auth is client-side via `lib/supabase/client.ts`.
+**LoginForm**:
+- Heading: "Welcome back, Roster Queen."
+- Email + password fields rendered but disabled (`emailPasswordDisabled = true`)
+- **Continue with Google** — `signInWithOAuth({ provider: "google", redirectTo: "/auth/callback" })`
+- Apple button visible, not wired
 
-**OAuth callback**: `app/auth/callback/route.ts` → redirects to `/dashboard` on success, `/?error=auth` on failure.
+**OAuth callback**: `app/auth/callback/route.ts` → `/dashboard` on success, `/?error=auth` on failure.
 
 ---
 
-### Signup — `app/(auth)/signup/page.tsx` *(planned)*
+### About — `app/about/page.tsx` *(route `/about`)*
 
-**Status**: ⏳ Not built
+**Status**: ✅ Implemented
 
-**Design**: Split screen — left brand panel, right form panel  
-**Left panel**: Brand statement "Join the league. Date like you mean it.", feature icons row (Rank People / See the Stats / Protect Your Energy)  
-**Right panel**:
-- Heading: "Create your account" (handwritten style)
-- Full name, Email, Password, Confirm Password fields
-- Terms checkbox
-- Primary CTA: `SIGN UP` button (crimson)
-- Google OAuth + Apple OAuth
-- Footer: "Already in the league? Log in"
-
-**Data**: Supabase `auth.signUp()` → creates user in `auth.users`
+**Content**: `components/about/about-page-content.tsx` — hero with `four-women.png`, mission copy, contact links.
 
 ---
 
-## Dashboard Pages
+### How it works — `app/how-it-works/page.tsx` *(route `/how-it-works`)*
 
-### Main Dashboard — `app/dashboard/page.tsx` *(implemented — route `/dashboard`)*
+**Status**: ✅ Implemented
 
-**Status**: ✅ Shell UI with mock data · 🔲 live Supabase queries
+**Content**: `components/how-it-works/how-it-works-content.tsx` — hero with `women-looking-phone.png`, step cards, fantasy vs roster comparison table.
 
-**Purpose**: Primary post-login destination. Combines daily stat entry and league table on one screen (v0/Cursor design).
+---
+
+## Dashboard pages
+
+Shared shell on authenticated routes:
+- `AppSidebar` — League Table, Daily Stats, My Roster, Account, Log out
+- `TopBar` — search (UI), user dropdown, logout
+- `DashboardMain` — `max-w-5xl px-8 py-8`
+- `PageHeader` — shared title + subtitle pattern
+
+---
+
+### League Table — `app/dashboard/page.tsx` *(route `/dashboard`)*
+
+**Status**: ✅ Live Supabase data
+
+**Purpose**: Primary post-login destination. Ranked league table.
+
+**Main column**: `<LeagueTable />` — period tabs, rank/points/form/consistency grid
+
+**Right rail**: `<RightRail />` — MVP, red flag, awards cards (**mock data**)
+
+**Data**: Client fetch via `fetchLeagueTable()` in `components/dashboard/league-table.tsx`
+
+**CTA on dashboard**: Link to `/stats` for daily stat entry (stat input removed from dashboard page).
+
+See [`league-table.md`](./league-table.md) for calculation details.
+
+---
+
+### Daily Stats — `app/(dashboard)/stats/page.tsx` *(route `/stats`)*
+
+**Status**: ✅ Live save to Supabase
+
+**Purpose**: Core data entry — log behaviours for a player on a given date.
+
+**UI**: `components/dashboard/daily-stat-input.tsx`
 
 **Layout**:
-- `AppSidebar` — left nav (links placeholder `#` for now)
-- `TopBar` — search, notifications, user area
-- Main column: `DailyStatInput` → dashed divider → `LeagueTable`
-- `RightRail` — MVP, red flag, awards cards (mock data)
+- Page header: "DAILY STAT INPUT"
+- Player selector (dropdown from roster)
+- Date picker
+- Behaviour card grid (all 40 behaviours, tooltips for descriptions)
+- Live points total
+- 7-day form chart (`FormChart`)
+- Notes (250 chars)
+- Save → `saveStatEntry()` in `lib/stats/stat-entries.ts`
 
-**Components**: `components/dashboard/*`
+**Empty state**: No roster players → link to `/roster`
 
-**Post-login redirect**: Google OAuth callback sends users here.
-
----
-
-### League Table — `app/(dashboard)/league/page.tsx` *(planned as standalone route)*
-
-**Status**: UI partially delivered inside `/dashboard` · standalone route not built
-
-**The hero page.** See full spec in [`league-table.md`](./league-table.md).
-
----
-
-### Legacy placeholder — `app/league/page.tsx`
-
-**Status**: ⚠️ Deprecated — OAuth no longer redirects here. Safe to delete once confirmed unused.
-
-### My Roster — `app/(dashboard)/roster/page.tsx`
-
-**Purpose**: Manage roster players — add, edit, change status  
-
-**Layout**:
-- Page title: "MY ROSTER"
-- Subheading: "Your lineup. Your rules."
-- Grid of player cards (3-col desktop, 2-col tablet, 1-col mobile)
-- "+ Add Player" button (top right)
-
-**Player Card**:
-- Avatar / photo
-- Nickname
-- Status badge (Active / Bench / Ghosted / etc.)
-- Total points
-- Last date logged
-- "Log Stats" quick action button
-- "Edit" / "···" overflow menu
-
-**Add/Edit Player Modal**:
-- Nickname (required)
-- Photo upload → Supabase Storage `player-photos` bucket
-- Status dropdown
-- Save button
-
-**Data fetched**:
-```typescript
-const { data: players } = await supabase
-  .from('roster_players')
-  .select('*, stat_entries(total_points)')
-  .eq('user_id', user.id)
-  .order('created_at', { ascending: false })
-```
+**On save**:
+1. Insert `stat_entries` with computed `total_points`
+2. Insert rows into `stat_entry_behaviors`
+3. Sync league snapshots (if migration 007 applied)
 
 ---
 
-### Daily Stats — `app/(dashboard)/daily-stats/page.tsx`
+### My Roster — `app/roster/page.tsx` *(route `/roster`)*
 
-**Purpose**: Log today's behaviours for a specific player  
-**This is the core data entry screen.**
+**Status**: ✅ Live CRUD
 
-**Layout**:
-- Page title: "DAILY STAT INPUT ♥"
-- Subheading: "Log the tea. Earn the points. See the pattern."
-- Date picker (top right, defaults to today)
-- Player selector (avatar strip at top — Ben S., Alex M., etc. — tap to select)
+**Purpose**: Manage roster players.
 
-**Selected Player Card**:
-- Avatar, nickname, @handle, status badge
-- "Today's Points Impact" — live updating sum as checkboxes are ticked
-- Mini form chart (last 7 days)
-- "VIEW PROFILE" link
+**UI**: `components/roster/roster-table.tsx`
 
-**Behaviour Checkboxes**:
-- Grouped by category
-- Each tile: icon + label + point value
-- Positive behaviours: white background, green point badge
-- Negative behaviours: light pink/red background, red point badge
-- Checked state: olive green fill + checkmark
+**Features**:
+- Filter by status (All / Active / Reserve / …)
+- Sort by last updated, added date, nickname
+- Add player form (`AddPlayerForm`) — scrollable emoji picker (~150 emojis)
+- Edit dialog (`EditPlayerDialog`) — same emoji picker
+- Delete confirmation (`DeletePlayerDialog`)
+- Table columns: emoji, nickname, description, status, relationship, dates, actions
 
-**Weekly Summary Panel** (right sidebar on desktop):
-- This week's total points
-- Rank change arrow
-- Recent entries list (last 5 days)
+**Data**: `fetchRosterPlayers`, `createRosterPlayer`, `updateRosterPlayer`, `deleteRosterPlayer` from `lib/roster/players.ts`
 
-**Notes Field**:
-- Optional textarea, 250 char limit
-- Placeholder: "Add any context... the vibes, the tea, the details."
-
-**Actions**:
-- `CANCEL` — clears form
-- `SAVE ENTRY` — saves to `stat_entries` + `stat_entry_behaviors`
-
-**On Save Logic**:
-```typescript
-// 1. Calculate total points from selected behaviors
-const totalPoints = selectedBehaviors.reduce((sum, b) => sum + b.points, 0)
-
-// 2. Upsert stat_entry (unique on user_id + player_id + entry_date)
-const { data: entry } = await supabase
-  .from('stat_entries')
-  .upsert({ user_id, player_id, entry_date, notes, total_points: totalPoints })
-  .select()
-  .single()
-
-// 3. Delete existing behaviors for this entry (if editing)
-await supabase.from('stat_entry_behaviors').delete().eq('entry_id', entry.id)
-
-// 4. Insert new behaviors
-await supabase.from('stat_entry_behaviors').insert(
-  selectedBehaviors.map(b => ({ entry_id: entry.id, behavior_id: b.id }))
-)
-```
+RLS ensures only the signed-in user's rows are returned — no explicit `user_id` filter in query.
 
 ---
 
-### Scoring System — `app/(dashboard)/scoring/page.tsx`
+### Account — `app/account/page.tsx` *(route `/account`)*
 
-**Purpose**: Reference page showing all 40 behaviours and their point values  
+**Status**: ✅ Implemented
 
-**Layout**:
-- Page title: "SCORING SYSTEM"
-- Subheading: "Know the game. Play to win."
-- Tabs or accordion by category
-- Each behaviour row: icon, name, points badge, description tooltip
-
-**Data fetched**:
-```typescript
-const { data: behaviors } = await supabase
-  .from('scoring_behaviors')
-  .select('*')
-  .order('category', { ascending: true })
-```
-
----
-
-### History — `app/(dashboard)/history/page.tsx`
-
-**Purpose**: Timeline of all stat entries across all players  
-
-**Layout**:
-- Filter bar: All Players | Date Range | Category
-- Chronological list of entries
-- Each entry: date, player name + avatar, behaviours logged as chips, total points, notes preview
-
----
-
-### Awards — `app/(dashboard)/awards/page.tsx`
-
-**Purpose**: Highlight special achievements / milestones  
-
-**Examples**:
-- 🏆 MVP of the Week
-- 📈 Most Improved
-- 🚩 Red Flag Alert
-- 👑 Consistency King
-- 💣 Love Bomb Index
-
-*(Based on the right panel in the League Table mockup)*
-
----
-
-### Settings — `app/(dashboard)/settings/page.tsx`
+**UI**: `components/account/account-page-content.tsx`
 
 **Sections**:
-- Profile (name, email, avatar)
-- Notifications preferences
-- Account (change password, delete account)
-- Data export (CSV download of all entries)
+- Profile (email, Google connection badge)
+- Nickname + avatar emoji (saved to Supabase `user_metadata`)
+- Delete account (placeholder — directs to support email)
+
+---
+
+## Planned pages (not built)
+
+| Route | Purpose |
+|-------|---------|
+| `app/(auth)/signup` | Email signup |
+| `/scoring` | Reference page for all 40 behaviours |
+| `/history` | Chronological entry log |
+| `/awards` | MVP, red flag, consistency awards |
+| `/settings` | Notifications, data export |
+
+---
+
+## Deprecated
+
+| Route | Notes |
+|-------|-------|
+| `app/league/page.tsx` | Legacy placeholder — OAuth no longer redirects here |
+
+---
+
+## Sidebar navigation (implemented)
+
+| Label | href |
+|-------|------|
+| League Table | `/dashboard` |
+| Daily Stats | `/stats` |
+| My Roster | `/roster` |
+| Account | `/account` |
+
+Defined in `components/dashboard/app-sidebar.tsx`.
