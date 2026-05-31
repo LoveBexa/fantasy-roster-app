@@ -57,7 +57,7 @@ export function LandingHero() {
           />
         </div>
 
-        <HeroStickyNote className="absolute -right-2 top-6 z-10 sm:-right-4 sm:top-8 lg:-right-8" />
+        <HeroStickyNote className="absolute -right-2 top-6 z-10 hidden sm:block sm:-right-4 sm:top-8 lg:-right-8" />
       </div>
     </section>
   )

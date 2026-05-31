@@ -26,8 +26,8 @@ export function LandingDashboardPreview() {
   const { mvpCard, consistencyCard, redFlagsCard } = landingDashboard
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-14 lg:py-20">
-      <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+    <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
+      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
         <div className="lg:pt-4">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
             {landingDashboard.label}
@@ -51,18 +51,18 @@ export function LandingDashboardPreview() {
           </ul>
         </div>
 
-        <div className="relative min-h-[520px]">
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-xl sm:p-5">
+        <div className="w-full min-w-0 lg:relative lg:min-h-[520px]">
+          <div className="w-full rounded-2xl border border-border bg-card p-3 shadow-xl sm:p-5">
             <h3 className="font-serif text-xl font-bold text-primary">
               {landingDashboard.tableTitle}
             </h3>
 
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[420px] text-left text-xs">
+            <div className="mt-4 w-full overflow-x-auto">
+              <table className="w-full min-w-0 text-left text-[0.65rem] sm:min-w-[420px] sm:text-xs">
                 <thead>
                   <tr className="border-b border-border text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
                     {landingDashboard.tableColumns.map((col) => (
-                      <th key={col} className="px-2 py-2 font-bold">
+                      <th key={col} className="px-1.5 py-2 font-bold sm:px-2">
                         {col}
                       </th>
                     ))}
@@ -71,31 +71,35 @@ export function LandingDashboardPreview() {
                 <tbody>
                   {landingDashboard.players.map((player) => (
                     <tr key={player.name} className="border-b border-border/60 last:border-0">
-                      <td className="px-2 py-3 font-serif text-lg font-bold">{player.rank}</td>
-                      <td className="px-2 py-3">
-                        <span className="flex items-center gap-2 font-medium text-foreground">
+                      <td className="px-1.5 py-2.5 font-serif text-base font-bold sm:px-2 sm:py-3 sm:text-lg">
+                        {player.rank}
+                      </td>
+                      <td className="px-1.5 py-2.5 sm:px-2 sm:py-3">
+                        <span className="flex items-center gap-1.5 font-medium text-foreground sm:gap-2">
                           <span>{player.emoji}</span>
                           {player.name}
                         </span>
                       </td>
-                      <td className="px-2 py-3">
+                      <td className="px-1.5 py-2.5 sm:px-2 sm:py-3">
                         <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-[0.6rem] font-bold uppercase ${statusClass(player.status)}`}
+                          className={`inline-flex rounded-full px-1.5 py-0.5 text-[0.55rem] font-bold uppercase sm:px-2 sm:text-[0.6rem] ${statusClass(player.status)}`}
                         >
                           {player.status}
                         </span>
                       </td>
-                      <td className="px-2 py-3 font-serif text-base font-bold text-primary">
+                      <td className="px-1.5 py-2.5 font-serif text-sm font-bold text-primary sm:px-2 sm:py-3 sm:text-base">
                         {player.points}
                       </td>
-                      <td className="px-2 py-3">
+                      <td className="px-1.5 py-2.5 sm:px-2 sm:py-3">
                         {player.trend === "up" ? (
-                          <ArrowUp className="size-4 text-brand-green" />
+                          <ArrowUp className="size-3.5 text-brand-green sm:size-4" />
                         ) : (
-                          <ArrowDown className="size-4 text-destructive" />
+                          <ArrowDown className="size-3.5 text-destructive sm:size-4" />
                         )}
                       </td>
-                      <td className="px-2 py-3 text-muted-foreground">{player.lastUpdated}</td>
+                      <td className="px-1.5 py-2.5 text-muted-foreground sm:px-2 sm:py-3">
+                        {player.lastUpdated}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -103,59 +107,61 @@ export function LandingDashboardPreview() {
             </div>
           </div>
 
-          <div className="absolute -right-2 top-8 z-10 w-52 rounded-2xl border border-border bg-card p-4 shadow-lg sm:-right-6 sm:w-56">
-            <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
-              {mvpCard.title}
-            </p>
-            <div className="mt-2 flex items-center gap-2">
-              <CrownDoodle className="size-5 text-amber-400" />
-              <span className="font-serif text-lg font-bold text-foreground">{mvpCard.player}</span>
+          <div className="mt-4 flex flex-col gap-4 lg:contents">
+            <div className="relative w-full rounded-2xl border border-border bg-card p-4 shadow-lg lg:absolute lg:-right-6 lg:top-8 lg:z-10 lg:w-56">
+              <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
+                {mvpCard.title}
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <CrownDoodle className="size-5 text-amber-400" />
+                <span className="font-serif text-lg font-bold text-foreground">{mvpCard.player}</span>
+              </div>
+              <p className="mt-1 font-serif text-2xl font-bold text-primary">+{mvpCard.points} pts</p>
+              <p className="mt-2 text-[0.65rem] leading-snug text-muted-foreground">{mvpCard.note}</p>
+              <Image
+                src="/images/trophy.png"
+                alt=""
+                width={48}
+                height={48}
+                className="absolute -bottom-2 -right-2 size-12 object-contain opacity-90"
+              />
             </div>
-            <p className="mt-1 font-serif text-2xl font-bold text-primary">+{mvpCard.points} pts</p>
-            <p className="mt-2 text-[0.65rem] leading-snug text-muted-foreground">{mvpCard.note}</p>
-            <Image
-              src="/images/trophy.png"
-              alt=""
-              width={48}
-              height={48}
-              className="absolute -bottom-2 -right-2 size-12 object-contain opacity-90"
-            />
-          </div>
 
-          <div className="absolute -left-2 bottom-16 z-10 w-48 rounded-2xl border border-border bg-accent/30 p-4 shadow-lg sm:-left-6 sm:w-52">
-            <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
-              {consistencyCard.title}
-            </p>
-            <p className="mt-2 font-serif text-4xl font-bold text-primary">{consistencyCard.score}%</p>
-            <div className="mt-2 flex gap-1">
-              {[...Array(5)].map((_, i) => (
-                <span
-                  key={i}
-                  className={`h-2 flex-1 rounded-full ${i < 4 ? "bg-primary" : "bg-primary/25"}`}
-                />
-              ))}
+            <div className="w-full rounded-2xl border border-border bg-accent/30 p-4 shadow-lg lg:absolute lg:-left-6 lg:bottom-16 lg:z-10 lg:w-52">
+              <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
+                {consistencyCard.title}
+              </p>
+              <p className="mt-2 font-serif text-4xl font-bold text-primary">{consistencyCard.score}%</p>
+              <div className="mt-2 flex gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <span
+                    key={i}
+                    className={`h-2 flex-1 rounded-full ${i < 4 ? "bg-primary" : "bg-primary/25"}`}
+                  />
+                ))}
+              </div>
+              <p className="mt-2 text-[0.65rem] text-muted-foreground">{consistencyCard.label}</p>
             </div>
-            <p className="mt-2 text-[0.65rem] text-muted-foreground">{consistencyCard.label}</p>
-          </div>
 
-          <div className="absolute -right-1 bottom-0 z-10 w-52 rounded-2xl border border-border bg-brand-pink/30 p-4 shadow-lg sm:-right-4 sm:w-56">
-            <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
-              {redFlagsCard.title}
-            </p>
-            <p className="mt-1 font-serif text-3xl font-bold text-primary">
-              {redFlagsCard.count}{" "}
-              <span className="text-sm font-sans font-normal text-muted-foreground">
-                {redFlagsCard.period}
-              </span>
-            </p>
-            <ul className="mt-3 space-y-1.5">
-              {redFlagsCard.items.map((item) => (
-                <li key={item} className="flex items-start gap-1.5 text-[0.65rem] text-foreground/80">
-                  <span className="mt-1 size-1 shrink-0 rounded-full bg-primary" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div className="w-full rounded-2xl border border-border bg-brand-pink/30 p-4 shadow-lg lg:absolute lg:-right-4 lg:bottom-0 lg:z-10 lg:w-56">
+              <p className="text-[0.6rem] font-bold uppercase tracking-wide text-muted-foreground">
+                {redFlagsCard.title}
+              </p>
+              <p className="mt-1 font-serif text-3xl font-bold text-primary">
+                {redFlagsCard.count}{" "}
+                <span className="text-sm font-sans font-normal text-muted-foreground">
+                  {redFlagsCard.period}
+                </span>
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {redFlagsCard.items.map((item) => (
+                  <li key={item} className="flex items-start gap-1.5 text-[0.65rem] text-foreground/80">
+                    <span className="mt-1 size-1 shrink-0 rounded-full bg-primary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
