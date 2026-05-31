@@ -7,12 +7,12 @@ export const landingHero = {
   primaryCta: "JOIN THE LEAGUE",
   secondaryCta: "HOW IT WORKS",
   annotation:
-    "Built for the people with 14 unread messages, 3 situationships, and a spreadsheet somewhere.",
+    "Built for the people with 420 unread messages, 3 situationships, and a Google Sheet called Dating Log",
   heroImage: "/images/women-looking-phone.png",
 } as const
 
 export const landingFeatures = [
-  { label: "MVP TRACKING", subtext: "Crown your top performers.", icon: "trophy" as const },
+  { label: "MVP TRACKING", subtext: "Promote your top performers.", icon: "trophy" as const },
   { label: "LEAGUE TABLES", subtext: "See how your roster ranks.", icon: "chart" as const },
   { label: "DATING ANALYTICS", subtext: "Data over delusion.", icon: "heart" as const },
   {

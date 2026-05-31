@@ -13,9 +13,6 @@ export async function proxy(request: NextRequest) {
 
   let supabaseResponse = NextResponse.next({ request })
 
-  console.log("SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL)
-  console.log("SUPABASE_ANON_KEY exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

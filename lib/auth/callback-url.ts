@@ -1,12 +1,18 @@
 export const AUTH_CALLBACK_PATH = "/auth/callback"
 export const DEFAULT_POST_AUTH_PATH = "/dashboard"
 
-/** Canonical app origin (set in Vercel env or injected from VERCEL_* at build). */
+/**
+ * App origin for redirects.
+ * In the browser, always use the current host (avoids a wrong NEXT_PUBLIC_SITE_URL sending OAuth to localhost).
+ * On the server, use NEXT_PUBLIC_SITE_URL or the request host.
+ */
 export function getSiteOrigin(fallbackOrigin?: string) {
+  if (typeof window !== "undefined") {
+    return window.location.origin
+  }
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "")
   if (configured) return configured
   if (fallbackOrigin) return fallbackOrigin.replace(/\/$/, "")
-  if (typeof window !== "undefined") return window.location.origin
   return ""
 }
 

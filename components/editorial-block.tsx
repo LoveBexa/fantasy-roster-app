@@ -50,10 +50,10 @@ function StickyNoteIllustration() {
         />
 
         <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 px-1 font-script text-[1.05rem] leading-snug text-primary">
-          <p>Idea ✓</p>
-          <p>Curiosity ✓</p>
+          <p>Problem ✓</p>
+          <p>Idea  ✓</p>
           <p>AI tools ✓</p>
-          <p>4 days ✓</p>
+          <p>3 days ✓</p>
         </div>
 
         <p className="mx-auto mt-3 w-fit rounded-full border border-primary px-4 py-0.5 font-script text-[1.05rem] text-primary">
@@ -75,7 +75,7 @@ function FeatureIcon({ children }: { children: ReactNode }) {
 const featureItems = [
   {
     title: "ONE IDEA",
-    subtitle: "Everything starts somewhere.",
+    subtitle: "All good ideas starts with a problem.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-8">
         <path d="M4 20l4-8 4 4 4-10 4 14" strokeLinecap="round" strokeLinejoin="round" />
@@ -149,8 +149,7 @@ export function EditorialBlock({ className }: { className?: string }) {
             <div className="space-y-4 text-sm leading-relaxed text-foreground/85 sm:text-[0.95rem]">
               <p>The Roster wasn&apos;t built by a startup team.</p>
               <p>
-                It was built by one person with an idea, AI tools, modern web technology
-                and a lot of curiosity.
+                It was built by one person with a ridiculous idea, a real problem, using AI modern tools and a lot of late nights.
               </p>
             </div>
 
@@ -160,7 +159,7 @@ export function EditorialBlock({ className }: { className?: string }) {
             </blockquote>
 
             <p className="mt-4 font-serif text-xl font-bold text-foreground sm:text-2xl">
-              You can.
+              Well, you can.
             </p>
 
             <Link
