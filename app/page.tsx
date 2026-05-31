@@ -1,6 +1,7 @@
 import { SiteNavbar } from "@/components/site-navbar"
 import { LoginHero } from "@/components/login-hero"
 import { LoginForm } from "@/components/login-form"
+import { EditorialBlock } from "@/components/editorial-block"
 
 export default function Page() {
   return (
@@ -13,6 +14,10 @@ export default function Page() {
           <LoginForm />
         </div>
       </section>
+
+      <div className="mx-auto max-w-7xl px-6 pb-8">
+        <EditorialBlock />
+      </div>
     </main>
   )
 }

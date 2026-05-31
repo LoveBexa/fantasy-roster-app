@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { SiteNavbar } from "@/components/site-navbar"
 import { AboutPageContent } from "@/components/about/about-page-content"
+import { EditorialBlock } from "@/components/editorial-block"
 import { Button } from "@/components/ui/button"
 
 export const metadata = {
@@ -17,13 +18,15 @@ export default function AboutPage() {
         <AboutPageContent />
 
         <div className="mt-8 flex justify-center border-t border-dashed border-border pt-8">
-        <Button
-  asChild
-  className="rounded-full bg-primary px-10 py-6 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
->
+          <Button
+            asChild
+            className="rounded-full bg-primary px-10 py-6 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
+          >
             <Link href="/">Join the league</Link>
           </Button>
         </div>
+
+        <EditorialBlock />
       </div>
     </main>
   )

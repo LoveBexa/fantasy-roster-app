@@ -1,5 +1,6 @@
 import { SiteNavbar } from "@/components/site-navbar"
 import { HowItWorksContent } from "@/components/how-it-works/how-it-works-content"
+import { EditorialBlock } from "@/components/editorial-block"
 
 export const metadata = {
   title: "How It Works — The Roster",
@@ -14,6 +15,7 @@ export default function HowItWorksPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <HowItWorksContent />
+        <EditorialBlock />
       </div>
     </main>
   )

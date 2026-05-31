@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Check, Pencil, Trash2 } from "lucide-react"
+import { Check, LogOut, Pencil, Trash2 } from "lucide-react"
 import { GoogleIcon, HeartDoodle, StarDoodle } from "@/components/doodles"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/dashboard/page-header"
@@ -23,6 +23,7 @@ import { ACCOUNT_EMOJI_OPTIONS, type AccountEmoji } from "@/lib/auth/account-con
 import { createClient } from "@/lib/supabase/client"
 import type { UserProfile } from "@/lib/auth/user-profile"
 import { deleteAccountAction } from "@/app/account/actions"
+import { useLogout } from "@/lib/auth/use-logout"
 
 type AccountPageContentProps = {
   initialProfile: UserProfile
@@ -45,6 +46,7 @@ function SectionHeading({
 
 export function AccountPageContent({ initialProfile }: AccountPageContentProps) {
   const router = useRouter()
+  const logout = useLogout()
   const [nickname, setNickname] = useState(
     initialProfile.nickname ?? initialProfile.googleName?.split(/\s+/)[0] ?? ""
   )
@@ -338,6 +340,18 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
             support@leveluproster.com
           </a>
         </p>
+      </div>
+
+      <div className="flex justify-center border-t border-dashed border-border pt-8">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => logout()}
+          className="h-11 rounded-full border-border px-8 font-bold tracking-wide text-foreground hover:bg-muted"
+        >
+          <LogOut className="size-4" />
+          Log out
+        </Button>
       </div>
     </section>
   )
