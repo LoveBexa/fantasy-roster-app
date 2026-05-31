@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ACCOUNT_EMOJI_OPTIONS, type AccountEmoji } from "@/lib/auth/account-constants"
+import { saveUserProfile } from "@/lib/auth/user-profile-db"
 import { createClient } from "@/lib/supabase/client"
 import type { UserProfile } from "@/lib/auth/user-profile"
 import { deleteAccountAction } from "@/app/account/actions"
@@ -47,9 +48,7 @@ function SectionHeading({
 export function AccountPageContent({ initialProfile }: AccountPageContentProps) {
   const router = useRouter()
   const logout = useLogout()
-  const [nickname, setNickname] = useState(
-    initialProfile.nickname ?? initialProfile.googleName?.split(/\s+/)[0] ?? ""
-  )
+  const [nickname, setNickname] = useState(initialProfile.nickname ?? "")
   const [selectedEmoji, setSelectedEmoji] = useState<AccountEmoji | null>(
     initialProfile.avatarEmoji
   )
@@ -74,9 +73,7 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
     }
 
     const supabase = createClient()
-    const { error } = await supabase.auth.updateUser({
-      data: { nickname: trimmed },
-    })
+    const { error } = await saveUserProfile(supabase, { nickname: trimmed })
 
     setIsSavingNickname(false)
 
@@ -95,9 +92,7 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
     setIsSavingAvatar(true)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.updateUser({
-      data: { avatar_emoji: emoji },
-    })
+    const { error } = await saveUserProfile(supabase, { avatarEmoji: emoji })
 
     setIsSavingAvatar(false)
 
@@ -204,7 +199,7 @@ export function AccountPageContent({ initialProfile }: AccountPageContentProps) 
               id="nickname"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder="Bexa"
+              placeholder="Your nickname"
               className="h-12 rounded-lg border-border bg-card"
             />
           </div>

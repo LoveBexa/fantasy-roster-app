@@ -4,8 +4,7 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { AccountPageContent } from "@/components/account/account-page-content"
 import { createClient } from "@/lib/supabase/server"
-import { getUserDisplay } from "@/lib/auth/user-display"
-import { getUserProfile } from "@/lib/auth/user-profile"
+import { getSessionUserContext } from "@/lib/auth/get-session-user"
 
 export const metadata = {
   title: "My Account — Level Up Roster",
@@ -14,25 +13,16 @@ export const metadata = {
 
 export default async function AccountPage() {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const session = await getSessionUserContext(supabase)
 
-  if (!user) {
-    redirect("/")
-  }
-
-  const userDisplay = getUserDisplay(user)
-  const profile = getUserProfile(user)
-
-  if (!profile) {
-    redirect("/")
+  if (!session) {
+    redirect("/login")
   }
 
   return (
-    <DashboardShell activePage="Account" user={userDisplay}>
+    <DashboardShell activePage="Account" user={session.display}>
       <DashboardMain>
-        <AccountPageContent initialProfile={profile} />
+        <AccountPageContent initialProfile={session.profile} />
       </DashboardMain>
 
       <RightRail />

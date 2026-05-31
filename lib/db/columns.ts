@@ -5,6 +5,7 @@ export const TABLES = {
   statEntries: "stat_entries",
   statEntryBehaviors: "stat_entry_behaviors",
   leaguePlayerSnapshots: "league_player_snapshots",
+  userProfiles: "user_profiles",
 } as const
 
 /** roster_players */
@@ -60,4 +61,13 @@ export const LEAGUE_PLAYER_SNAPSHOTS = {
   rank: "rank",
   totalPoints: "total_points",
   createdAt: "created_at",
+} as const
+
+/** user_profiles */
+export const USER_PROFILES = {
+  userId: "user_id",
+  nickname: "nickname",
+  avatarEmoji: "avatar_emoji",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
 } as const

@@ -15,6 +15,7 @@ All tables live in Supabase (Postgres). Row Level Security (RLS) is enabled on u
 | `stat_entries` | One daily log per (user, player, date) |
 | `stat_entry_behaviors` | Junction — which behaviours were logged in each entry |
 | `league_player_snapshots` | Daily cumulative rank + points per player (form arrows) |
+| `user_profiles` | Per-user nickname and avatar emoji |
 
 ---
 
@@ -31,6 +32,7 @@ Run in Supabase SQL Editor in order:
 | `supabase/migrations/005_table_grants.sql` | GRANT select/insert/update/delete to authenticated |
 | `supabase/migrations/006_scoring_behaviors_columns.sql` | Add description, created_at on behaviours |
 | `supabase/migrations/007_league_player_snapshots.sql` | Snapshots for rank history / form |
+| `supabase/migrations/008_user_profiles.sql` | User nickname + avatar profile table + signup trigger |
 
 Demo seed (optional): `supabase/seed/demo_roster_players.sql` — see [`seed-and-troubleshooting.md`](./seed-and-troubleshooting.md).
 

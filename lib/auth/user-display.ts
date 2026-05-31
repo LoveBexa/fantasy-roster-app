@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js"
-import { parseAvatarEmojiFromMeta } from "@/lib/auth/user-profile"
+import type { UserProfileRow } from "@/lib/auth/user-profile-db"
+import { getAvatarEmojiFromProfileRow } from "@/lib/auth/user-profile-db"
 
 export type UserDisplay = {
   name: string
@@ -9,26 +10,23 @@ export type UserDisplay = {
   avatarEmoji: string | null
 }
 
-export function getUserDisplay(user: User | null): UserDisplay | null {
+export function getUserDisplay(
+  user: User | null,
+  profileRow?: UserProfileRow | null
+): UserDisplay | null {
   if (!user) return null
 
   const meta = user.user_metadata ?? {}
+  const dbNickname = profileRow?.nickname?.trim() || null
 
-  const nickname = typeof meta.nickname === "string" ? meta.nickname : null
-
-  const name =
-    nickname ||
-    (typeof meta.full_name === "string" && meta.full_name) ||
-    (typeof meta.name === "string" && meta.name) ||
-    user.email?.split("@")[0] ||
-    "there"
+  const name = dbNickname || user.email?.split("@")[0] || "there"
 
   const avatarUrl =
     (typeof meta.avatar_url === "string" && meta.avatar_url) ||
     (typeof meta.picture === "string" && meta.picture) ||
     null
 
-  const avatarEmoji = parseAvatarEmojiFromMeta(meta.avatar_emoji)
+  const avatarEmoji = getAvatarEmojiFromProfileRow(profileRow ?? null)
 
   return {
     name,

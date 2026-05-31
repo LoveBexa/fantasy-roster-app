@@ -3,17 +3,14 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { LeagueTable } from "@/components/dashboard/league-table"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { createClient } from "@/lib/supabase/server"
-import { getUserDisplay } from "@/lib/auth/user-display"
+import { getSessionUserContext } from "@/lib/auth/get-session-user"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  const userDisplay = getUserDisplay(user)
+  const session = await getSessionUserContext(supabase)
 
   return (
-    <DashboardShell activePage="League Table" user={userDisplay}>
+    <DashboardShell activePage="League Table" user={session?.display ?? null}>
       <DashboardMain>
         <LeagueTable />
       </DashboardMain>

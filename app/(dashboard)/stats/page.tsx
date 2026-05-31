@@ -4,7 +4,7 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { RightRail } from "@/components/dashboard/right-rail"
 import { DailyStatInput } from "@/components/dashboard/daily-stat-input"
 import { createClient } from "@/lib/supabase/server"
-import { getUserDisplay } from "@/lib/auth/user-display"
+import { getSessionUserContext } from "@/lib/auth/get-session-user"
 
 export const metadata = {
   title: "Daily Stats — The Roster",
@@ -13,18 +13,14 @@ export const metadata = {
 
 export default async function DailyStatsPage() {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const session = await getSessionUserContext(supabase)
 
-  if (!user) {
-    redirect("/")
+  if (!session) {
+    redirect("/login")
   }
 
-  const userDisplay = getUserDisplay(user)
-
   return (
-    <DashboardShell activePage="Daily Stats" user={userDisplay}>
+    <DashboardShell activePage="Daily Stats" user={session.display}>
       <DashboardMain>
         <DailyStatInput />
       </DashboardMain>

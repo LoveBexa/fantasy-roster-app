@@ -1,23 +1,17 @@
 import { SiteNavbar } from "@/components/site-navbar"
-import { LoginHero } from "@/components/login-hero"
-import { LoginForm } from "@/components/login-form"
-import { EditorialBlock } from "@/components/editorial-block"
+import { LandingPageContent } from "@/components/landing/landing-page-content"
 
-export default function Page() {
+export const metadata = {
+  title: "The Roster — Fantasy League for Modern Dating",
+  description:
+    "Track behaviour. Spot patterns. Rank your roster. Fantasy league for modern dating.",
+}
+
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-background">
-      <SiteNavbar />
-
-      <section className="mx-auto grid max-w-7xl items-stretch gap-8 px-6 py-8 lg:grid-cols-2 lg:gap-12">
-        <LoginHero />
-        <div className="flex items-center">
-          <LoginForm />
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-7xl px-6 pb-8">
-        <EditorialBlock />
-      </div>
+      <SiteNavbar sticky />
+      <LandingPageContent />
     </main>
   )
 }

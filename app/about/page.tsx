@@ -22,7 +22,7 @@ export default function AboutPage() {
             asChild
             className="rounded-full bg-primary px-10 py-6 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
           >
-            <Link href="/">Join the league</Link>
+            <Link href="/signup">Join the league</Link>
           </Button>
         </div>
 

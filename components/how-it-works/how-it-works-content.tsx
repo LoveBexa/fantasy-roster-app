@@ -142,7 +142,7 @@ export function HowItWorksContent() {
               asChild
               className="mt-6 w-fit rounded-full bg-primary px-8 text-sm font-bold text-primary-foreground hover:bg-primary/90"
             >
-              <Link href="/">Sign up free</Link>
+              <Link href="/signup">Sign up free</Link>
             </Button>
           </div>
 
@@ -308,7 +308,7 @@ export function HowItWorksContent() {
           asChild
           className="rounded-full bg-primary px-10 py-6 text-sm font-bold tracking-wide text-primary-foreground hover:bg-primary/90"
         >
-          <Link href="/">Sign up — it&apos;s free</Link>
+          <Link href="/signup">Sign up — it&apos;s free</Link>
         </Button>
         <p className="text-xs text-muted-foreground">
           Continue with Google. Start building your roster in minutes.

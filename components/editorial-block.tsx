@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { HeartDoodle } from "@/components/doodles"
+import { cn } from "@/lib/utils"
 
 const STICKY_NOTE_BG = "#FCF7E9"
 const FEATURE_BAR_BG = "#F9F5EB"
@@ -33,7 +34,7 @@ function StickyNoteIllustration() {
       style={{ transform: `rotate(${STICKY_NOTE_ROTATION})` }}
     >
       <div
-        className="absolute left-1/2 top-0 z-10 h-7 w-16 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-amber-200/70 shadow-sm"
+        className="absolute left-1/2 top-0 z-10 h-7 w-16 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-white/90 shadow-sm ring-1 ring-black/[0.04]"
         aria-hidden
       />
       <div
@@ -123,9 +124,9 @@ const featureItems = [
   },
 ] as const
 
-export function EditorialBlock() {
+export function EditorialBlock({ className }: { className?: string }) {
   return (
-    <aside aria-label="Built with AI" className="mt-16">
+    <aside aria-label="Built with AI" className={cn("mt-16", className)}>
       <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
         {/* Main editorial area */}
         <div className="grid gap-8 bg-background px-6 py-8 md:px-10 md:py-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)_auto] lg:gap-0 lg:py-12">
@@ -138,7 +139,7 @@ export function EditorialBlock() {
             <h2 className="mt-3 font-serif text-4xl font-bold leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
               Built with AI
               <br />
-              in <i>4 Days</i>
+              in <i>3 Days</i>
             </h2>
             <WavyUnderline className="mt-4 h-3 w-48 text-primary sm:w-56" />
           </div>
@@ -155,7 +156,7 @@ export function EditorialBlock() {
 
             <blockquote className="mt-6 font-script text-2xl leading-snug text-primary sm:text-[1.65rem]">
               &ldquo;I wish I could design and build
-              my own app...&rdquo;
+              my own web app...&rdquo;
             </blockquote>
 
             <p className="mt-4 font-serif text-xl font-bold text-foreground sm:text-2xl">
@@ -170,8 +171,8 @@ export function EditorialBlock() {
             </Link>
           </div>
 
-          {/* Right — sticky note */}
-          <div className="flex items-center justify-center py-2 lg:pl-6">
+          {/* Right — sticky note (desktop only) */}
+          <div className="hidden items-center justify-center py-2 lg:flex lg:pl-6">
             <StickyNoteIllustration />
           </div>
         </div>
