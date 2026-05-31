@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { RosterLogoLink } from "@/components/roster-logo-link"
 import { useLogout } from "@/lib/auth/use-logout"
 import type { UserDisplay } from "@/lib/auth/user-display"
 
@@ -32,14 +33,11 @@ export function TopBar({ user }: TopBarProps) {
   return (
     <header className="sticky top-0 z-40 flex shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-4 py-3 md:gap-4 md:px-8 md:py-4 lg:static lg:bg-card/40">
       <div className="flex min-w-0 flex-1 items-center gap-3 lg:gap-4">
-        <div className="min-w-0 lg:hidden">
-          <p className="truncate font-serif text-2xl font-bold leading-none tracking-tight text-primary">
-            THE ROSTER
-          </p>
-          <p className="mt-0.5 truncate text-[0.65rem] font-semibold tracking-[0.28em] text-primary/55">
-            FANTASY LEAGUE
-          </p>
-        </div>
+        <RosterLogoLink
+          className="min-w-0 lg:hidden"
+          titleClassName="truncate text-2xl leading-none"
+          taglineClassName="mt-0.5 truncate text-[0.65rem] tracking-[0.28em] text-primary/55"
+        />
         <div className="relative hidden w-full max-w-sm lg:block">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input

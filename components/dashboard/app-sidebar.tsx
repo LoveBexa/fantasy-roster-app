@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { LogOut } from "lucide-react"
+import { RosterLogoLink } from "@/components/roster-logo-link"
 import { HeartDoodle } from "@/components/doodles"
 import { useLogout } from "@/lib/auth/use-logout"
 import { APP_NAV_ITEMS, type SidebarActivePage } from "./app-nav-items"
@@ -22,14 +23,11 @@ export function AppSidebar({ activePage }: AppSidebarProps) {
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card/60 px-4 py-6 lg:flex">
-      <div className="px-2">
-        <h2 className="font-serif text-3xl font-bold leading-tight tracking-tight text-primary">
-          THE ROSTER
-        </h2>
-        <p className="mt-1 text-[0.65rem] font-semibold tracking-[0.5em] text-primary/50">
-          FANTASY LEAGUE
-        </p>
-      </div>
+      <RosterLogoLink
+        className="px-2"
+        titleClassName="text-3xl"
+        taglineClassName="mt-1 text-[0.65rem] tracking-[0.5em]"
+      />
 
       <nav className="mt-8 flex flex-col gap-1" aria-label="Main navigation">
         {APP_NAV_ITEMS.map((item) => {
