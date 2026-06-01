@@ -51,6 +51,7 @@ const emptyWeek: FormChartPoint[] = Array.from({ length: 7 }, (_, i) => {
 
 export function DailyStatInput() {
   const notesRef = useRef<HTMLTextAreaElement>(null)
+  const successMessageRef = useRef<HTMLParagraphElement>(null)
   const [players, setPlayers] = useState<Player[]>([])
   const [behaviors, setBehaviors] = useState<ScoringBehaviorRow[]>([])
   const [selectedPlayerId, setSelectedPlayerId] = useState("")
@@ -171,6 +172,12 @@ export function DailyStatInput() {
   useEffect(() => {
     void loadSavedDayPoints(selectedPlayerId, entryDate)
   }, [selectedPlayerId, entryDate, loadSavedDayPoints])
+
+  useEffect(() => {
+    if (!successMessage) return
+
+    successMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [successMessage])
 
   const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
 
@@ -308,7 +315,8 @@ export function DailyStatInput() {
 
         {successMessage ? (
           <p
-            className="rounded-lg border border-brand-green/30 bg-brand-green/10 px-4 py-3 text-sm font-medium text-brand-green"
+            ref={successMessageRef}
+            className="scroll-mt-24 rounded-lg border border-brand-green/30 bg-brand-green/10 px-4 py-3 text-sm font-medium text-brand-green"
             role="status"
           >
             {successMessage}

@@ -71,7 +71,7 @@ export function RecentActivityLog({
     <section
       id="recent-activity-log"
       aria-labelledby="recent-activity-heading"
-      className="scroll-mt-8 rounded-2xl border border-border bg-accent/25 p-6"
+      className="scroll-mt-8 rounded-2xl border border-border bg-accent/25 p-4 sm:p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/60 pb-5">
         <div>
@@ -118,7 +118,7 @@ export function RecentActivityLog({
           No stat entries yet. Save your first entry above to see it here.
         </p>
       ) : (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-4 space-y-2 sm:space-y-3">
           {entries.map((entry) => {
             const isExpanded = expandedId === entry.id
             const isPositive = entry.totalPoints >= 0
@@ -132,56 +132,90 @@ export function RecentActivityLog({
                 <button
                   type="button"
                   onClick={() => setExpandedId(isExpanded ? null : entry.id)}
-                  className="grid w-full grid-cols-[5.5rem_1fr_auto_auto] items-center gap-3 px-4 py-4 text-left sm:grid-cols-[6rem_1fr_1.5fr_auto] sm:gap-4 sm:px-5"
+                  className="w-full px-3 py-3 text-left sm:grid sm:grid-cols-[6rem_1fr_1.5fr_auto] sm:items-center sm:gap-4 sm:px-5 sm:py-4"
                   aria-expanded={isExpanded}
                 >
-                  <div>
-                    <p
-                      className={`font-serif text-2xl font-bold sm:text-3xl ${
-                        isPositive ? "text-brand-green" : "text-primary"
-                      }`}
-                    >
-                      {entry.totalPoints >= 0 ? "+" : ""}
-                      {entry.totalPoints} pts
-                    </p>
-                    <span
-                      className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                        isPositive
-                          ? "border-brand-green/40 text-brand-green"
-                          : "border-primary/40 text-primary"
-                      }`}
-                    >
-                      {isPositive ? "Positive" : "Negative"}
-                    </span>
-                  </div>
-
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-pink/40 text-2xl sm:size-12">
+                  <div className="flex items-center gap-2 sm:hidden">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-pink/40 text-xl">
                       {entry.playerEmoji}
                     </span>
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-foreground">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground">
                         {entry.playerNickname}
                       </p>
-                      <p className="text-sm text-muted-foreground">{entry.entryDate}</p>
+                      <p className="text-xs text-muted-foreground">{entry.entryDate}</p>
                     </div>
+                    <div className="shrink-0 text-right">
+                      <p
+                        className={`font-serif text-base font-bold leading-none ${
+                          isPositive ? "text-brand-green" : "text-primary"
+                        }`}
+                      >
+                        {entry.totalPoints >= 0 ? "+" : ""}
+                        {entry.totalPoints}
+                      </p>
+                      <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        pts
+                      </p>
+                    </div>
+                    <span className="flex size-7 shrink-0 items-center justify-center text-muted-foreground">
+                      {isExpanded ? (
+                        <ChevronUp className="size-4" />
+                      ) : (
+                        <ChevronDown className="size-4" />
+                      )}
+                    </span>
                   </div>
 
-                  <p className="hidden truncate text-sm text-muted-foreground sm:block">
-                    {behaviorSummary(entry)}
-                  </p>
+                  <div className="hidden sm:contents">
+                    <div>
+                      <p
+                        className={`font-serif text-2xl font-bold sm:text-3xl ${
+                          isPositive ? "text-brand-green" : "text-primary"
+                        }`}
+                      >
+                        {entry.totalPoints >= 0 ? "+" : ""}
+                        {entry.totalPoints} pts
+                      </p>
+                      <span
+                        className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                          isPositive
+                            ? "border-brand-green/40 text-brand-green"
+                            : "border-primary/40 text-primary"
+                        }`}
+                      >
+                        {isPositive ? "Positive" : "Negative"}
+                      </span>
+                    </div>
 
-                  <span className="flex size-8 items-center justify-center text-muted-foreground">
-                    {isExpanded ? (
-                      <ChevronUp className="size-5" />
-                    ) : (
-                      <ChevronDown className="size-5" />
-                    )}
-                  </span>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-pink/40 text-2xl">
+                        {entry.playerEmoji}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-foreground">
+                          {entry.playerNickname}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{entry.entryDate}</p>
+                      </div>
+                    </div>
+
+                    <p className="truncate text-sm text-muted-foreground">
+                      {behaviorSummary(entry)}
+                    </p>
+
+                    <span className="flex size-8 items-center justify-center text-muted-foreground">
+                      {isExpanded ? (
+                        <ChevronUp className="size-5" />
+                      ) : (
+                        <ChevronDown className="size-5" />
+                      )}
+                    </span>
+                  </div>
                 </button>
 
                 {isExpanded ? (
-                  <div className="border-t border-border/60 bg-accent/15 px-4 py-5 sm:px-5">
+                  <div className="border-t border-border/60 bg-accent/15 px-3 py-4 sm:px-5 sm:py-5">
                     <p className="mb-4 truncate text-sm text-muted-foreground sm:hidden">
                       {behaviorSummary(entry)}
                     </p>

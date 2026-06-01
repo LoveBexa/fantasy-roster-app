@@ -163,7 +163,7 @@ export function EditorialBlock({ className }: { className?: string }) {
             </p>
 
             <Link
-              href="#"
+              href="/workshop"
               className="mt-5 inline-block border-b-2 border-primary pb-0.5 text-sm font-bold tracking-wide text-primary transition-colors hover:text-primary/80"
             >
               Join The Workshop Waitlist →
