@@ -163,7 +163,7 @@ export function DashboardOnboarding() {
               <span className="h-px w-10 bg-border" aria-hidden />
             </div>
             <p className="mt-4 text-sm text-muted-foreground sm:text-base">
-              Track behaviour. Spot patterns. Rank your roster.
+              Read this guide to learn how to use The Roster.
             </p>
           </header>
 

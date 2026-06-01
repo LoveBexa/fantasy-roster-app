@@ -10,42 +10,43 @@ import {
   Trophy,
 } from "lucide-react"
 import Image from "next/image"
-import { StarDoodle } from "@/components/doodles"
+import { HeartDoodle, StarDoodle } from "@/components/doodles"
+import { HeroStickyNote } from "@/components/hero-sticky-note"
 import { Button } from "@/components/ui/button"
 
 const pillars = [
   {
     title: "The Concept",
     icon: BarChart3,
-    body: "We treat dating like a fantasy league — because patterns matter more than promises.",
+    body: "It came from literally a Whatsapp chat. Hearing all the stories of women who were fed up with dating multiple half-assed people over and over again.",
   },
   {
     title: "The Metrics",
     icon: ClipboardList,
-    body: "Every interaction gets a score. Effort, consistency, communication — all tracked.",
+    body: "Tracking the data data provides patterns and insights that help you make better decisions.",
   },
   {
     title: "The Roster",
     icon: Heart,
-    body: "You're the manager. You decide who's starting, who's benched, and who's cut.",
+    body: "A dating roster is just a list of people you're dating. Everyone on dating apps is on a roster. If you're app dating you're probably on someone else's roster already.",
   },
   {
     title: "The Insights",
     icon: TrendingUp,
-    body: "Over time, patterns become visible. You stop guessing. You start knowing.",
+    body: "Over time, patterns become visible. Everyone tracks their dates in their own ways. We just made it easier to log to analyse this data.",
   },
   {
-    title: "The Game",
+    title: "The Decision",
     icon: Trophy,
-    body: "You're not settling. You're strategising. And you're winning your own league.",
+    body: "You're not settling. You're strategising. And you're making informed decisions based on the data.",
   },
 ] as const
 
 const manifestoItems = [
-  "No more \"vibes-only\" thinking.",
+  "Helping smart women trust their instincts.",
   "No more ignoring red flags.",
   "No more chasing inconsistent effort.",
-  "Just data, patterns, and informed decisions.",
+  "Choose people who choose you.",
 ] as const
 
 export function AboutPageContent() {
@@ -127,7 +128,7 @@ export function AboutPageContent() {
 
       <section
         aria-labelledby="manifesto-heading"
-        className="rounded-2xl border border-border bg-card px-8 py-10 lg:grid lg:grid-cols-2 lg:gap-12"
+        className="rounded-2xl border border-border bg-card px-8 py-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-12"
       >
         <div>
           <h2
@@ -148,16 +149,17 @@ export function AboutPageContent() {
           </ul>
         </div>
 
-        <div className="mt-10 flex flex-col justify-center lg:mt-0">
-          <p className="font-serif text-4xl font-bold leading-tight text-foreground">
-            Data over drama.
-          </p>
-          <p className="mt-6 text-sm font-bold uppercase tracking-wide text-primary">
-            Remember:
-          </p>
-          <p className="mt-2 font-serif text-3xl font-bold leading-tight text-foreground">
-            Not personal. Just data.
-          </p>
+        <div className="mt-10 flex justify-center lg:mt-0">
+          <HeroStickyNote className="w-64 px-7 py-6 sm:w-72 -rotate-2">
+            <p className="font-script text-[1.65rem] leading-snug text-primary sm:text-[1.85rem]">
+              Data over drama.
+              <br />
+              Remember:
+              <br />
+              Not personal. Just data.
+            </p>
+            <HeartDoodle className="mt-2 size-6 text-primary" />
+          </HeroStickyNote>
         </div>
       </section>
 

@@ -149,7 +149,7 @@ export function EditorialBlock({ className }: { className?: string }) {
             <div className="space-y-4 text-sm leading-relaxed text-foreground/85 sm:text-[0.95rem]">
               <p>The Roster wasn&apos;t built by a startup team.</p>
               <p>
-                It was built by one person seeing a real problem, and solving it using AI tools to build a ridiculous solution on 3 days of no sleep.
+                It was built by one person seeing a real problem, and solving it in a ridiculous way using AI tools and 3 days of no sleep.
               </p>
             </div>
 
